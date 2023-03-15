@@ -17,7 +17,7 @@ describe('App', () => {
             })
         ).toHaveTextContent('Hello World');
     });
-    it("Render not found if invalid path", () => {
+    it("rendering a component that uses useLocation", () => {
         render(
             <MemoryRouter initialEntries={['/not-found']}>
                 <LocationDisplay />
