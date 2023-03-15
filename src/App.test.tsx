@@ -1,12 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { describe, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import App  from './App';
+import { MemoryRouter } from 'react-router-dom';
+import Home from './pages/Home';
+import { LocationDisplay } from './Route';
 
 describe('App', () => {
     it('Render hello world', () => {
         // arrange
-        render(<App />);
+        render(<Home />);
         // act
         // expect
         expect(
@@ -15,4 +17,12 @@ describe('App', () => {
             })
         ).toHaveTextContent('Hello World');
     });
+    it("Render not found if invalid path", () => {
+        render(
+            <MemoryRouter initialEntries={['/not-found']}>
+                <LocationDisplay />
+            </MemoryRouter>
+        )
+        expect(screen.getByTestId('location-display')).toHaveTextContent('/not-found');
+    })
 })

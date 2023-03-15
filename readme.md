@@ -21,20 +21,17 @@ Template starter project with react js. This project has build with [Vitejs](htt
 8. prettier
 
     - create file .prettierrc.cjs and setup basic configuration file use module
-    - add "prettier" at file eslintrc.cjs plugins array
+    - add "prettier" at file eslintrc.cjs plugins array and add 'plugin:prettier/recommended' at extend
 
 
 ### Routing
 1. react-router-dom
 
 ### Testing(devDependencies)
-1. vitest
+1. vitest(includes : @vitejs/plugin-react)
 2. jsdom
-3. @testing-library/jest-dom
+3. @testing-library/jest-dom(includes : @testing-library/react)
 
     - check in github example react-testing-lib-msw and copy vite.config.ts. also add reference
     - add file setupTest.ts at file vite.config.ts and add [config](https://markus.oberlehner.net/blog/using-testing-library-jest-dom-with-vitest/)
     - add script "test" : "vitest"
-
-4. @testing-library/react
-5. @vitejs/plugin-react
