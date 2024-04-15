@@ -20,22 +20,9 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
-    'react/react-in-jsx-scope': 0,
-    'prettier/prettier': 'error',
-    'no-unused-vars': 'warn',
+    'react/no-array-index-key': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     'no-console': 'off',
-    'no-underscore-dangle': 0,
-    'node/no-unsupported-features/es-syntax': 'off',
-    'func-names': ['error', 'never'],
-    'arrow-body-style': ['error', 'always'],
-    'prefer-destructuring': 'off',
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: true,
-        optionalDependencies: false,
-        peerDependencies: false,
-      },
-    ],
   },
 };

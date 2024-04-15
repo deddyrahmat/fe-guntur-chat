@@ -1,6 +1,9 @@
+import React, { Suspense } from 'react';
 import { createBrowserRouter, useLocation } from 'react-router-dom';
-import Home from '../pages/Home';
-import Notfound from '../pages/Notfound';
+import Loading from '../pages/Loading';
+
+const Home = React.lazy(() => import('../pages/Home'));
+const Notfound = React.lazy(() => import('../pages/Notfound'));
 
 export function LocationDisplay() {
   const location = useLocation();
@@ -11,10 +14,18 @@ export function LocationDisplay() {
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <Home />
+      </Suspense>
+    ),
   },
   {
     path: '*',
-    element: <Notfound />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <Notfound />
+      </Suspense>
+    ),
   },
 ]);

@@ -1,5 +1,8 @@
+import React from 'react';
+import Chat from '../components/organisms/Chat';
+
 function Home() {
-  return <h1>Hello World</h1>;
+  return <Chat />;
 }
 
 export default Home;
