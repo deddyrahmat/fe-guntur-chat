@@ -4,11 +4,11 @@ import { io } from 'socket.io-client';
 // const SystemMessage = {
 //   id: 1,
 //   body: 'Online',
-//   author: currentUser,
+//   sender: currentUser,
 // };
 function Chat({ currentUser, onLogout }: any) {
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [Datamessages, setDataMessages] = useState([]);
   const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
@@ -30,10 +30,10 @@ function Chat({ currentUser, onLogout }: any) {
         console.log('Socket disconnected');
       });
 
-      socket.on('chat', (newMessage: any) => {
+      socket.on('message', (newMessage: any) => {
         console.log('New message added', newMessage);
-        setMessages((previousMessages: any): any => {
-          return [...previousMessages, newMessage];
+        setDataMessages((previousDataMessages: any): any => {
+          return [...previousDataMessages, newMessage];
         });
       });
     }
@@ -47,7 +47,7 @@ function Chat({ currentUser, onLogout }: any) {
 
   const handleSendMessage = () => {
     if (!socket || inputValue.trim().length === 0) return;
-    socket.emit('chat', { author: currentUser, body: inputValue.trim() });
+    socket.emit('message', { sender: currentUser, message: inputValue.trim() });
     setInputValue('');
   };
 
@@ -68,18 +68,22 @@ function Chat({ currentUser, onLogout }: any) {
         </button> */}
       </div>
       <div className="chat-message-list">
-        {messages.map((message: any, idx: number) => {
+        {Datamessages.map((dataMessage: any, idx: number) => {
           return (
             <div
               key={idx}
               className={`chat-message ${
-                currentUser === message.author ? 'outgoing' : ''
+                currentUser === dataMessage.sender ? 'outgoing' : ''
               }`}
             >
               <div className="chat-message-wrapper">
-                <span className="chat-message-author">{message.author}</span>
+                <span className="chat-message-sender">
+                  {dataMessage.sender}
+                </span>
                 <div className="chat-message-bubble">
-                  <span className="chat-message-body">{message.body}</span>
+                  <span className="chat-message-message">
+                    {dataMessage.message}
+                  </span>
                 </div>
               </div>
             </div>
