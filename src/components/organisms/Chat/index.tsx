@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
-const SystemMessage = {
-  id: 1,
-  body: 'Online',
-  author: 'User@mail.com',
-};
-
+// const SystemMessage = {
+//   id: 1,
+//   body: 'Online',
+//   author: currentUser,
+// };
 function Chat({ currentUser, onLogout }: any) {
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState([SystemMessage]);
+  const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
-    const newSocket: any = io(import.meta.env.VITE_URL_CHAT_SERVER, {
+    const newSocket: any = io(import.meta.env.VITE_URL_SERVER, {
       autoConnect: false,
     });
     newSocket.connect();
@@ -33,7 +32,7 @@ function Chat({ currentUser, onLogout }: any) {
 
       socket.on('chat', (newMessage: any) => {
         console.log('New message added', newMessage);
-        setMessages((previousMessages) => {
+        setMessages((previousMessages: any): any => {
           return [...previousMessages, newMessage];
         });
       });
@@ -56,14 +55,14 @@ function Chat({ currentUser, onLogout }: any) {
     if (socket) {
       socket.disconnect();
     }
-    // onLogout();
     // onLogout =function for remove data user login
+    onLogout();
   };
 
   return (
     <div className="chat">
       <div className="chat-header">
-        <span>Room Chat APp</span>
+        <span>Room Chat App</span>
         {/* <button type="button" className="button" onClick={handleLogout}>
           Logout
         </button> */}

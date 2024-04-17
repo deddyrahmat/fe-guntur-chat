@@ -19,10 +19,13 @@ module.exports = {
     project: './tsconfig.json',
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
+  ignorePatterns: ['tailwind.config.js', 'postcss.config.js'],
   rules: {
     'react/no-array-index-key': 'off',
     'react-hooks/exhaustive-deps': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-console': 'off',
+    'jsx-a11y/label-has-associated-control': 'off',
+    'react/require-default-props': 'off',
   },
 };
