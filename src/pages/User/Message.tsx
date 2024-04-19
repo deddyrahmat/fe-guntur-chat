@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Chat from '../../components/organisms/Chat';
 import { useAppSelector } from '../../redux/hooks';
 
-function Home() {
+function Message() {
   const { email } = useAppSelector((state: any) => {
     return state.auth;
   });
@@ -11,4 +11,4 @@ function Home() {
   return <Chat currentUser={email} onLogout={() => setCurrentUser(null)} />;
 }
 
-export default Home;
+export default Message;

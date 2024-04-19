@@ -1,0 +1,22 @@
+/* Styling scrollbar */
+.customScrollbar::-webkit-scrollbar {
+    width: 5px;
+    /* Atur lebar scrollbar */
+}
+
+.customScrollbar::-webkit-scrollbar-track {
+    background-color: transparent;
+    /* Hapus latar belakang scrollbar */
+}
+
+.customScrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(179, 179, 179);
+    /* Warna thumb scrollbar */
+    border-radius: 6px;
+    /* Bentuk thumb scrollbar */
+}
+
+.customScrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: gray;
+    /* Warna thumb scrollbar saat dihover */
+}

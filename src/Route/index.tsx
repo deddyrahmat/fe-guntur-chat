@@ -5,6 +5,9 @@ import GuestRoute from './GuestRoute';
 import PrivateRoute from './PrivateRoute';
 import Sidebar from '../components/organisms/Sidebar';
 import ListUser from '../pages/Admin/ListUser';
+import UserRoute from './UserRoute ';
+import Message from '../pages/User/Message';
+import SidebarUser from '../components/organisms/SidebarUser';
 
 const Home = React.lazy(() => import('../pages/Admin/Home'));
 const Login = React.lazy(() => import('../pages/Login'));
@@ -48,6 +51,30 @@ export const router = createBrowserRouter([
       {
         path: '',
         element: <Navigate to="/dashboard" replace />,
+      },
+    ],
+  },
+  {
+    path: '/user/',
+    element: (
+      <Suspense fallback={<Loading type="xl" />}>
+        <UserRoute />
+      </Suspense>
+    ),
+    children: [
+      {
+        path: 'Message/*',
+        element: (
+          <Suspense fallback={<Loading type="xl" />}>
+            <SidebarUser>
+              <Message />
+            </SidebarUser>
+          </Suspense>
+        ),
+      },
+      {
+        path: '',
+        element: <Navigate to="/Message" replace />,
       },
     ],
   },
