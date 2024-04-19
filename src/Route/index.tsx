@@ -4,8 +4,9 @@ import Loading from '../components/atoms/Loading';
 import GuestRoute from './GuestRoute';
 import PrivateRoute from './PrivateRoute';
 import Sidebar from '../components/organisms/Sidebar';
+import ListUser from '../pages/Admin/ListUser';
 
-const Home = React.lazy(() => import('../pages/Home'));
+const Home = React.lazy(() => import('../pages/Admin/Home'));
 const Login = React.lazy(() => import('../pages/Login'));
 const Notfound = React.lazy(() => import('../pages/Notfound'));
 
@@ -17,7 +18,7 @@ export function LocationDisplay() {
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/admin/',
     element: (
       <Suspense fallback={<Loading type="xl" />}>
         <PrivateRoute />
@@ -30,6 +31,16 @@ export const router = createBrowserRouter([
           <Suspense fallback={<Loading type="xl" />}>
             <Sidebar>
               <Home />
+            </Sidebar>
+          </Suspense>
+        ),
+      },
+      {
+        path: 'contact/*',
+        element: (
+          <Suspense fallback={<Loading type="xl" />}>
+            <Sidebar>
+              <ListUser />
             </Sidebar>
           </Suspense>
         ),

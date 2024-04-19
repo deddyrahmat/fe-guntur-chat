@@ -54,7 +54,7 @@ function Login() {
         >
           <img
             className="w-8 h-8 mr-2"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
+            src="/assets/images/logo.svg"
             alt="logo"
           />
           <span className="dark:text-white text-gray-900">Guntur</span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Chat from '../components/organisms/Chat';
-import { useAppSelector } from '../redux/hooks';
+import Chat from '../../components/organisms/Chat';
+import { useAppSelector } from '../../redux/hooks';
 
 function Home() {
   const { email } = useAppSelector((state: any) => {
