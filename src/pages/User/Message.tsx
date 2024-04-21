@@ -10,18 +10,16 @@ function Message() {
     return state.auth;
   });
 
-  // const [currentUser, setCurrentUser] = useState(null);
   if (currentPage === 'message') {
     return (
       <Chat
         currentUser={email}
         receiverUser={data.email}
         username={data.username}
-        status={data.status}
-        // onLogout={() => setCurrentUser(null)}
       />
     );
   }
+  console.log('first');
 
   return (
     <div>

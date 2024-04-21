@@ -9,14 +9,19 @@ import capitalizeFirstLetters from '../../../utils/manageString';
 //   body: 'Online',
 //   sender: currentUser,
 // };
-function Chat({ currentUser, username, receiverUser, status }: any) {
+function Chat({ currentUser, username, receiverUser }: any) {
   const [inputValue, setInputValue] = useState('');
   const [Datamessages, setDataMessages] = useState([]);
   const [socket, setSocket] = useState<any>(null);
+  // const [dataOnlineUsers, setDataOnlineUsers] = useState([]);
+  const [dataOnlineUsers, setDataOnlineUsers] = useState<string[]>([]); // Menentukan tipe string[] untuk dataOnlineUsers
 
   useEffect(() => {
     const newSocket: any = io(import.meta.env.VITE_URL_SERVER, {
       autoConnect: false,
+      auth: {
+        userId: currentUser,
+      },
     });
     newSocket.connect();
 
@@ -43,6 +48,11 @@ function Chat({ currentUser, username, receiverUser, status }: any) {
             return [...previousDataMessages, newMessage];
           });
         }
+      });
+
+      // Mendapatkan daftar pengguna yang online dari server WebSocket saat komponen dipasang
+      socket.on('onlineUsers', (onlineUsers: any) => {
+        setDataOnlineUsers(onlineUsers);
       });
     }
 
@@ -72,6 +82,10 @@ function Chat({ currentUser, username, receiverUser, status }: any) {
   //   onLogout();
   // };
 
+  // fungsi mencari data yang sama
+  const isUserOnline = (sessionId: string): boolean => {
+    return dataOnlineUsers.includes(sessionId);
+  };
   return (
     <main className="relative">
       <section
@@ -88,7 +102,9 @@ function Chat({ currentUser, username, receiverUser, status }: any) {
             {capitalizeFirstLetters(username)}
           </h5>
           <p className="text-sm text-black dark:text-black">
-            {capitalizeFirstLetters(status ? 'online' : 'offline')}
+            {capitalizeFirstLetters(
+              isUserOnline(receiverUser) ? 'Online' : 'Offline'
+            )}
           </p>
         </div>
       </section>

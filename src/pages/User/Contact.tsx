@@ -15,6 +15,7 @@ function Contact() {
   });
 
   const [listContact, setListContact] = useState<any>([]);
+
   const fetchContact = async () => {
     try {
       const config = {
