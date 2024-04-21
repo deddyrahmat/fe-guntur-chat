@@ -1,8 +1,6 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import React, { useState } from 'react';
 
-import styles from './style.module.css';
-
 function SidebarUser({ children }: any) {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAvatar, setShowAvatar] = useState(false);
@@ -21,7 +19,7 @@ function SidebarUser({ children }: any) {
         }`}
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-slate-100 dark:bg-gray-800">
+        <div className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800">
           <div className="  mb-4 border-b border-gray-200 dark:border-gray-700">
             <a
               href="https://flowbite.com/"
@@ -47,9 +45,7 @@ function SidebarUser({ children }: any) {
               <div>x</div>
             </div>
           </div>
-          <div
-            className={`overflow-y-auto h-5/6 scroll-smooth ${styles.customScrollbar}`}
-          >
+          <div className="overflow-y-auto h-5/6 scroll-smooth custom-scrollbar">
             <ul className="space-y-2 font-medium ">
               <li>
                 <button
@@ -119,7 +115,7 @@ function SidebarUser({ children }: any) {
               <div>
                 <button
                   type="button"
-                  className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                  className="flex text-sm bg-white rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                   aria-expanded="false"
                   data-dropdown-toggle="dropdown-user"
                   onClick={handleShowAvatar}
@@ -127,7 +123,7 @@ function SidebarUser({ children }: any) {
                   <span className="sr-only">Open user menu</span>
                   <img
                     className="w-8 h-8 rounded-full"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                    src="/assets/images/logo.svg"
                     alt="profile photo"
                   />
                 </button>

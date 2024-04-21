@@ -79,14 +79,34 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: '/login',
+    path: '/',
     element: (
       <Suspense fallback={<Loading type="xl" />}>
-        <GuestRoute>
-          <Login />
-        </GuestRoute>
+        <GuestRoute />
       </Suspense>
     ),
+    children: [
+      {
+        path: 'login',
+        element: (
+          <Suspense fallback={<Loading type="xl" />}>
+            <Login />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'register',
+        element: (
+          <Suspense fallback={<Loading type="xl" />}>
+            <Login />
+          </Suspense>
+        ),
+      },
+      {
+        path: '',
+        element: <Navigate to="/login" replace />,
+      },
+    ],
   },
   {
     path: '*',

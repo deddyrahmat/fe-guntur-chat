@@ -27,5 +27,6 @@ module.exports = {
     'no-console': 'off',
     'jsx-a11y/label-has-associated-control': 'off',
     'react/require-default-props': 'off',
+    'jsx-a11y/img-redundant-alt': 'off',
   },
 };
