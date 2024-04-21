@@ -5,13 +5,14 @@ import { createSlice } from '@reduxjs/toolkit';
 type AuthSliceType = {
   token: string;
   role: string;
+  username: string;
   email: string;
 };
 
 const localAuth: any = localStorage.getItem('auth');
 const initialState: AuthSliceType = localAuth
   ? JSON.parse(localAuth)
-  : { token: '', email: '', role: '' };
+  : { token: '', username: '', email: '', role: '' };
 
 export const UserSlice = createSlice({
   name: 'userAuth',
@@ -22,6 +23,7 @@ export const UserSlice = createSlice({
       state.token = action.payload.access_token;
       state.role = action.payload.role;
       state.email = action.payload.email;
+      state.username = action.payload.name;
     },
     USER_LOGOUT: (state) => {
       state.token = '';
