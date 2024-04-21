@@ -3,17 +3,30 @@ import Chat from '../../components/organisms/Chat';
 import { useAppSelector } from '../../redux/hooks';
 
 function Message() {
-  const { email, username } = useAppSelector((state: any) => {
+  const { currentPage, data } = useAppSelector((state: any) => {
+    return state.userMessage;
+  });
+  const { email } = useAppSelector((state: any) => {
     return state.auth;
   });
 
-  const [currentUser, setCurrentUser] = useState(null);
+  // const [currentUser, setCurrentUser] = useState(null);
+  if (currentPage === 'message') {
+    return (
+      <Chat
+        currentUser={email}
+        receiverUser={data.email}
+        username={data.username}
+        status={data.status}
+        // onLogout={() => setCurrentUser(null)}
+      />
+    );
+  }
+
   return (
-    <Chat
-      currentUser={email}
-      username={username}
-      onLogout={() => setCurrentUser(null)}
-    />
+    <div>
+      <p>Welcome</p>
+    </div>
   );
 }
 

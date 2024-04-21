@@ -1,7 +1,17 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { SET_PAGE } from '../../../redux/userMessageSlice';
 
 function SidebarUser({ children }: any) {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { currentPage } = useAppSelector((state: any) => {
+    return state.userMessage;
+  });
+
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAvatar, setShowAvatar] = useState(false);
   const handleShowSidebar = () => {
@@ -10,6 +20,14 @@ function SidebarUser({ children }: any) {
   const handleShowAvatar = () => {
     setShowAvatar(!showAvatar);
   };
+
+  const handleContent = () => {
+    // fitur mengganti page/content
+    // ganti ke contact
+    navigate('/user/contact');
+    // dispatch(SET_PAGE({ currentPage: 'contact', data: {} }));
+  };
+
   return (
     <>
       <aside
@@ -21,19 +39,25 @@ function SidebarUser({ children }: any) {
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800">
           <div className="  mb-4 border-b border-gray-200 dark:border-gray-700">
-            <a
-              href="https://flowbite.com/"
-              className="flex items-center ps-2.5 mb-5"
-            >
-              <img
-                src="/assets/images/logo.svg"
-                className="h-6 me-3 sm:h-7"
-                alt="Flowbite Logo"
-              />
-              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                Guntur
-              </span>
-            </a>
+            <div className="flex items-center justify-between ps-2.5 mb-5">
+              <div>
+                <a href="https://google.com/" className="flex items-center  ">
+                  <img
+                    src="/assets/images/logo.svg"
+                    className="h-6 me-3 sm:h-7"
+                    alt="Guntur Logo"
+                  />
+                  <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+                    Guntur
+                  </span>
+                </a>
+              </div>
+              <div>
+                <button type="button" onClick={handleContent}>
+                  M
+                </button>
+              </div>
+            </div>
             <div className="flex items-center  ps-2.5 mb-5 gap-3">
               <input
                 type="text"
@@ -45,6 +69,7 @@ function SidebarUser({ children }: any) {
               <div>x</div>
             </div>
           </div>
+          {/* sidebar menu */}
           <div className="overflow-y-auto h-5/6 scroll-smooth custom-scrollbar">
             <ul className="space-y-2 font-medium ">
               <li>

@@ -9,7 +9,7 @@ import capitalizeFirstLetters from '../../../utils/manageString';
 //   body: 'Online',
 //   sender: currentUser,
 // };
-function Chat({ currentUser, username, onLogout }: any) {
+function Chat({ currentUser, username, receiverUser, status }: any) {
   const [inputValue, setInputValue] = useState('');
   const [Datamessages, setDataMessages] = useState([]);
   const [socket, setSocket] = useState<any>(null);
@@ -57,20 +57,20 @@ function Chat({ currentUser, username, onLogout }: any) {
     if (!socket || inputValue.trim().length === 0) return;
     socket.emit('message', {
       sender: currentUser,
-      receiver: 'rangga@gmail.com',
+      receiver: receiverUser,
       message: inputValue.trim(),
       createdAt: dayjs(),
     });
     setInputValue('');
   };
 
-  const handleLogout = () => {
-    if (socket) {
-      socket.disconnect();
-    }
-    // onLogout =function for remove data user login
-    onLogout();
-  };
+  // const handleLogout = () => {
+  //   if (socket) {
+  //     socket.disconnect();
+  //   }
+  //   // onLogout =function for remove data user login
+  //   onLogout();
+  // };
 
   return (
     <main className="relative">
@@ -88,7 +88,7 @@ function Chat({ currentUser, username, onLogout }: any) {
             {capitalizeFirstLetters(username)}
           </h5>
           <p className="text-sm text-black dark:text-black">
-            {capitalizeFirstLetters('online')}
+            {capitalizeFirstLetters(status ? 'online' : 'offline')}
           </p>
         </div>
       </section>
@@ -153,31 +153,6 @@ function Chat({ currentUser, username, onLogout }: any) {
           Send
         </button>
       </section>
-      {/* <div className="chat">
-        <div className="chat-message-list">
-          {Datamessages.map((dataMessage: any, idx: number) => {
-            return (
-              <div
-                key={idx}
-                className={`chat-message ${
-                  currentUser === dataMessage.sender ? 'outgoing' : ''
-                }`}
-              >
-                <div className="chat-message-wrapper">
-                  <span className="chat-message-sender">
-                    {dataMessage.sender}
-                  </span>
-                  <div className="chat-message-bubble">
-                    <span className="chat-message-message">
-                      {dataMessage.message}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div> */}
     </main>
   );
 }
