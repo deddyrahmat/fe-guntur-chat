@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import React, { useState, useEffect, Fragment } from 'react';
 import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
@@ -26,6 +27,12 @@ function Chat({ currentUser, username, receiverUser }: any) {
     newSocket.connect();
 
     setSocket(newSocket);
+
+    // memeriksa chat terakhir dan jika ada tampilkan
+    const storageHistoryChat: any = localStorage.getItem('chat-history');
+    if (storageHistoryChat !== null && storageHistoryChat !== undefined) {
+      setDataMessages(JSON.parse(storageHistoryChat));
+    }
   }, []);
 
   useEffect(() => {
@@ -44,6 +51,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
           currentUser === newMessage.sender
         ) {
           console.log('New message added', newMessage);
+          // simpan chat terbaru yang dikirim dari server agar ditampilkan ke user
           setDataMessages((previousDataMessages: any): any => {
             return [...previousDataMessages, newMessage];
           });
@@ -62,6 +70,12 @@ function Chat({ currentUser, username, receiverUser }: any) {
       }
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (Datamessages.length > 0) {
+      localStorage.setItem('chat-history', JSON.stringify(Datamessages));
+    }
+  }, [Datamessages]);
 
   const handleSendMessage = () => {
     if (!socket || inputValue.trim().length === 0) return;
@@ -82,7 +96,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
   //   onLogout();
   // };
 
-  // fungsi mencari data yang sama
+  // cek status user, online or offline
   const isUserOnline = (sessionId: string): boolean => {
     return dataOnlineUsers.includes(sessionId);
   };
@@ -112,44 +126,56 @@ function Chat({ currentUser, username, receiverUser }: any) {
         id="message"
         className="bg-white p-3 mb-3 overflow-y-auto h-[68vh] scroll-smooth custom-scrollbar"
       >
-        {Datamessages.map((dataMessage: any, idx: number) => {
-          return (
-            <Fragment key={idx}>
-              {/* pengirim */}
-              {currentUser === dataMessage.sender && (
-                <div id="sender" className="w-full flex flex-row-reverse mb-3">
-                  <div className="flex justify-between items-end w-8/12  bg-emerald-500 dark:bg-emerald-200   p-3 rounded-tr-xl rounded-b-xl gap-3 mb-3">
-                    <p className="text-md text-white dark:text-black">
-                      {dataMessage.message}
-                    </p>
-                    <p className="text-xs text-gray-100 dark:text-black">
-                      {dayjs(dataMessage.createdAt).format('YYYY-MM-DD') ===
-                      dayjs().format('YYYY-MM-DD')
-                        ? dayjs(dataMessage.createdAt).format('HH:mm')
-                        : dayjs(dataMessage.createdAt).format('YYYY-MM-DD')}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {/* penerima */}
+        {Datamessages?.length > 0 &&
+          Datamessages.map((dataMessage: any, idx: number) => {
+            if (
+              receiverUser === dataMessage.receiver ||
+              receiverUser === dataMessage.sender
+            ) {
+              return (
+                <Fragment key={idx}>
+                  {/* pengirim */}
+                  {currentUser === dataMessage.sender && (
+                    <div
+                      id="sender"
+                      className="w-full flex flex-row-reverse mb-3"
+                    >
+                      <div className="flex justify-between items-end w-8/12  bg-emerald-500 dark:bg-emerald-200   p-3 rounded-tr-xl rounded-b-xl gap-3 mb-3">
+                        <p className="text-md text-white dark:text-black">
+                          {dataMessage.message}
+                        </p>
+                        <p className="text-xs text-gray-100 dark:text-black">
+                          {dayjs(dataMessage.createdAt).format('YYYY-MM-DD') ===
+                          dayjs().format('YYYY-MM-DD')
+                            ? dayjs(dataMessage.createdAt).format('HH:mm')
+                            : dayjs(dataMessage.createdAt).format('YYYY-MM-DD')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {/* penerima */}
 
-              {currentUser === dataMessage.receiver && (
-                <div
-                  id="receiver"
-                  className="flex justify-between items-end w-8/12 bg-slate-900 p-3 rounded-tl-xl rounded-b-xl gap-3 mb-3"
-                >
-                  <p className="text-md text-white ">{dataMessage.message}</p>
-                  <p className="text-xs text-gray-300 ">
-                    {dayjs(dataMessage.createdAt).format('YYYY-MM-DD') ===
-                    dayjs().format('YYYY-MM-DD')
-                      ? dayjs(dataMessage.createdAt).format('HH:mm')
-                      : dayjs(dataMessage.createdAt).format('YYYY-MM-DD')}
-                  </p>
-                </div>
-              )}
-            </Fragment>
-          );
-        })}
+                  {currentUser === dataMessage.receiver && (
+                    <div
+                      id="receiver"
+                      className="flex justify-between items-end w-8/12 bg-slate-900 p-3 rounded-tl-xl rounded-b-xl gap-3 mb-3"
+                    >
+                      <p className="text-md text-white ">
+                        {dataMessage.message}
+                      </p>
+                      <p className="text-xs text-gray-300 ">
+                        {dayjs(dataMessage.createdAt).format('YYYY-MM-DD') ===
+                        dayjs().format('YYYY-MM-DD')
+                          ? dayjs(dataMessage.createdAt).format('HH:mm')
+                          : dayjs(dataMessage.createdAt).format('YYYY-MM-DD')}
+                      </p>
+                    </div>
+                  )}
+                </Fragment>
+              );
+            }
+            return null;
+          })}
       </section>
       {/* className="fixed bottom-0 left-[400px]" */}
       <section id="form" className="w-full flex items-center gap-3">
