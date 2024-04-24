@@ -31,7 +31,20 @@ function Chat({ currentUser, username, receiverUser }: any) {
     // memeriksa chat terakhir dan jika ada tampilkan
     const storageHistoryChat: any = localStorage.getItem('chat-history');
     if (storageHistoryChat !== null && storageHistoryChat !== undefined) {
-      setDataMessages(JSON.parse(storageHistoryChat));
+      const firstDate = JSON.parse(storageHistoryChat);
+      setDataMessages(firstDate);
+      const getAfterSeverDay: any = dayjs(firstDate[0].createdAt).add(7, 'day');
+      console.log('getAfterSeverDay', getAfterSeverDay);
+
+      // Memeriksa apakah tanggal hari ini sama atau lewat 7 hari dari tanggal pertama di history chat
+      const isAfterOrSame =
+        dayjs().isSame(getAfterSeverDay, 'day') ||
+        dayjs().isAfter(getAfterSeverDay, 'day');
+      if (isAfterOrSame) {
+        // simpan history chat ke database dan hapus localstorage
+        // kirim hanyak sender === currentUser
+      }
+      console.log('isAfterOrSame', isAfterOrSame);
     }
   }, []);
 
@@ -104,7 +117,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
     <main className="relative">
       <section
         id="header"
-        className="bg-white p-3 mb-3 flex items-center gap-3 "
+        className="bg-white p-3 mb-3 flex items-center gap-3 rounded-lg md:rounded-xl "
       >
         <img
           className="w-8 h-8 rounded-full"
@@ -124,7 +137,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
       </section>
       <section
         id="message"
-        className="bg-white p-3 mb-3 overflow-y-auto h-[68vh] scroll-smooth custom-scrollbar"
+        className=" p-3 mb-3 overflow-y-auto h-[68vh] scroll-smooth custom-scrollbar"
       >
         {Datamessages?.length > 0 &&
           Datamessages.map((dataMessage: any, idx: number) => {
@@ -140,16 +153,27 @@ function Chat({ currentUser, username, receiverUser }: any) {
                       id="sender"
                       className="w-full flex flex-row-reverse mb-3"
                     >
-                      <div className="flex justify-between items-end w-8/12  bg-emerald-500 dark:bg-emerald-200   p-3 rounded-tr-xl rounded-b-xl gap-3 mb-3">
-                        <p className="text-md text-white dark:text-black">
+                      <div className="relative flex justify-between items-end w-6/12 bg-white p-3 rounded-lg md:rounded-xl gap-3 mb-3">
+                        <p className="text-md text-black">
                           {dataMessage.message}
                         </p>
-                        <p className="text-xs text-gray-100 dark:text-black">
+                        <p className="text-xs text-gray-500 dark:text-black">
                           {dayjs(dataMessage.createdAt).format('YYYY-MM-DD') ===
                           dayjs().format('YYYY-MM-DD')
                             ? dayjs(dataMessage.createdAt).format('HH:mm')
                             : dayjs(dataMessage.createdAt).format('YYYY-MM-DD')}
                         </p>
+                        <div
+                          className="absolute top-[39%] right-0 "
+                          style={{
+                            width: 0,
+                            height: 0,
+                            borderTop: '20px solid transparent',
+                            borderRight: '20px solid white',
+                            borderBottom: '20px solid transparent',
+                            transform: 'rotate(90deg)',
+                          }}
+                        />
                       </div>
                     </div>
                   )}
@@ -158,17 +182,28 @@ function Chat({ currentUser, username, receiverUser }: any) {
                   {currentUser === dataMessage.receiver && (
                     <div
                       id="receiver"
-                      className="flex justify-between items-end w-8/12 bg-slate-900 p-3 rounded-tl-xl rounded-b-xl gap-3 mb-3"
+                      className="relative flex justify-between items-end w-6/12 bg-white p-3 rounded-lg md:rounded-xl gap-3 mb-3"
                     >
-                      <p className="text-md text-white ">
+                      <p className="text-md text-black ">
                         {dataMessage.message}
                       </p>
-                      <p className="text-xs text-gray-300 ">
+                      <p className="text-xs text-gray-500 ">
                         {dayjs(dataMessage.createdAt).format('YYYY-MM-DD') ===
                         dayjs().format('YYYY-MM-DD')
                           ? dayjs(dataMessage.createdAt).format('HH:mm')
                           : dayjs(dataMessage.createdAt).format('YYYY-MM-DD')}
                       </p>
+                      <div
+                        className="absolute top-[39%] left-0 "
+                        style={{
+                          width: 0,
+                          height: 0,
+                          borderTop: '20px solid transparent',
+                          borderRight: '20px solid white',
+                          borderBottom: '20px solid transparent',
+                          transform: 'rotate(90deg)',
+                        }}
+                      />
                     </div>
                   )}
                 </Fragment>
@@ -177,16 +212,28 @@ function Chat({ currentUser, username, receiverUser }: any) {
             return null;
           })}
       </section>
-      {/* className="fixed bottom-0 left-[400px]" */}
       <section id="form" className="w-full flex items-center gap-3">
-        <input
-          className="w-full p-2"
-          placeholder="Type message here"
-          value={inputValue}
-          onChange={(e) => {
-            return setInputValue(e.target.value);
-          }}
-        />
+        <div className="relative w-full">
+          <input
+            className="w-[99%] p-2 rounded-lg md:rounded-xl"
+            placeholder="Type message here"
+            value={inputValue}
+            onChange={(e) => {
+              return setInputValue(e.target.value);
+            }}
+          />
+          <div
+            className="absolute top-[28%] right-[1%] "
+            style={{
+              width: 0,
+              height: 0,
+              borderTop: '20px solid transparent',
+              borderRight: '20px solid white',
+              borderBottom: '20px solid transparent',
+              transform: 'rotate(90deg)',
+            }}
+          />
+        </div>
         <button
           type="button"
           onClick={handleSendMessage}

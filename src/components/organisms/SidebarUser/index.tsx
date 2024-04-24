@@ -34,13 +34,13 @@ function SidebarUser({ children }: any) {
       <aside
         id="logo-sidebar"
         className={`fixed top-0 left-0 z-40 w-64 md:w-[400px] h-screen transition-transform -translate-x-full ${
-          showSidebar ? 'sm:translate-x-0' : ''
+          showSidebar ? 'md:translate-x-0' : ''
         }`}
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800">
+        <div className="h-full px-3 py-4 overflow-y-auto bg-white">
           <div className="  mb-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between ps-2.5 mb-5">
+            <div className="flex items-center justify-between ps-2.5 mb-5 ">
               <div>
                 <a href="https://google.com/" className="flex items-center  ">
                   <img
@@ -106,9 +106,9 @@ function SidebarUser({ children }: any) {
         </div>
       </aside>
 
-      <div className={showSidebar ? 'sm:ml-[400px]' : ''}>
+      <div className={showSidebar ? 'md:ml-[400px]' : ''}>
         {/* navbar profile */}
-        <div className="flex p-3 justify-between">
+        <div className="flex p-3 justify-between bg-white">
           {/* hamburgermenu */}
           <div>
             <button
@@ -217,7 +217,7 @@ function SidebarUser({ children }: any) {
           </div>
         </div>
         {/* content */}
-        <div className="p-4 ">{children}</div>
+        <div className="p-4 min-h-[100vh-56px]">{children}</div>
       </div>
     </>
   );
