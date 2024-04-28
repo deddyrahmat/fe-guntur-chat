@@ -5,16 +5,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#00A4DB',
-          100: '#BFEAF8',
-          200: '#8FD8F1',
-          300: '#60C7E9',
-          400: '#30B5E2',
-          500: '#00A4DB',
-          600: '#0083AF',
-          700: '#006283',
-          800: '#004258',
-          900: '#00212C',
+          DEFAULT: '#9e32f7',
+          100: '#fbfafe',
+          200: '#f4eaff',
+          300: '#eedeff',
+          400: '#e6cfff',
+          500: '#dcbeff',
+          600: '#cea6ff',
+          700: '#be85ff',
+          800: '#8f25e3',
+          900: '#460774',
         },
         danger: {
           DEFAULT: '#FB3C3C',

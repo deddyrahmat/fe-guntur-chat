@@ -60,7 +60,7 @@ function Contact() {
 
   return (
     <>
-      <h2 className="mb-5 text-lg md:text-xl font-bold bg-white p-3">
+      <h2 className="mb-5 text-lg md:text-xl font-bold bg-white p-3 rounded-lg md:rounded-xl">
         Contact
       </h2>
       <ContactUser listContact={listContact} handleMessage={handleMessage} />
