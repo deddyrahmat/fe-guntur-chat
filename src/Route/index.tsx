@@ -9,6 +9,7 @@ import UserRoute from './UserRoute ';
 import Message from '../pages/User/Message';
 import SidebarUser from '../components/organisms/SidebarUser';
 import Contact from '../pages/User/Contact';
+import User from '../pages/User';
 
 const Home = React.lazy(() => import('../pages/Admin/Home'));
 const Login = React.lazy(() => import('../pages/Login'));
@@ -56,38 +57,14 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: '/user/',
+    path: '/user',
     element: (
       <Suspense fallback={<Loading type="xl" />}>
-        <UserRoute />
+        <UserRoute>
+          <User />
+        </UserRoute>
       </Suspense>
     ),
-    children: [
-      {
-        path: 'message/*',
-        element: (
-          <Suspense fallback={<Loading type="xl" />}>
-            <SidebarUser>
-              <Message />
-            </SidebarUser>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'contact/*',
-        element: (
-          <Suspense fallback={<Loading type="xl" />}>
-            <SidebarUser>
-              <Contact />
-            </SidebarUser>
-          </Suspense>
-        ),
-      },
-      {
-        path: '',
-        element: <Navigate to="/message" replace />,
-      },
-    ],
   },
   {
     path: '/',

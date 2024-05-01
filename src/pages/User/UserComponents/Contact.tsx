@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-import ContactUser from '../../components/organisms/ContactUser';
-import ApiUser from '../../config/Endpoints/users';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { SET_PAGE } from '../../redux/userMessageSlice';
+import ContactUser from '../../../components/organisms/ContactUser';
+import ApiUser from '../../../config/Endpoints/users';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { SET_CHILDPAGE } from '../../../redux/userSlice';
 
 function Contact() {
   const navigate = useNavigate();
@@ -14,7 +14,23 @@ function Contact() {
     return state.auth;
   });
 
+  const dataUserStore = useAppSelector((state: any) => {
+    return state.userStore.data;
+  });
+
   const [listContact, setListContact] = useState<any>([]);
+  useEffect(() => {
+    console.log('listContact', listContact);
+    dispatch(
+      SET_CHILDPAGE({
+        childPage: 'contact',
+        childPageKey: 'contact',
+        data: {
+          ...listContact,
+        },
+      })
+    );
+  }, [listContact]);
 
   const fetchContact = async () => {
     try {
@@ -42,8 +58,9 @@ function Contact() {
     statusParam: boolean
   ) => {
     dispatch(
-      SET_PAGE({
-        currentPage: 'message',
+      SET_CHILDPAGE({
+        childPage: 'message',
+        childPageKey: 'message',
         data: {
           email: emailParam,
           username: usernameParam,
@@ -51,11 +68,13 @@ function Contact() {
         },
       })
     );
-
-    navigate('/user/message');
   };
   useEffect(() => {
-    fetchContact();
+    if (dataUserStore?.contact && dataUserStore?.contact.length > 0) {
+      setListContact(dataUserStore?.contact);
+    } else {
+      fetchContact();
+    }
   }, []);
 
   return (

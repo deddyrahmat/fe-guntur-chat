@@ -9,7 +9,7 @@ export default function PrivateRoute({ children }: any) {
   console.log('role', role);
 
   if (!token && role !== 'admin') return <Navigate to="/login" replace />;
-  if (role !== 'admin') return <Navigate to="/user/message" replace />;
+  if (role !== 'admin') return <Navigate to="/user" replace />;
 
   return children || <Outlet />;
 }

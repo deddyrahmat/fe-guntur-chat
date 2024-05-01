@@ -5,12 +5,16 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { SET_PAGE } from '../../../redux/userMessageSlice';
 import capitalizeFirstLetters from '../../../utils/manageString';
+import { SET_CHILDPAGE } from '../../../redux/userSlice';
 
 function SidebarUser({ children }: any) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { username, email } = useAppSelector((state: any) => {
     return state.auth;
+  });
+  const dataUserStore = useAppSelector((state: any) => {
+    return state.userStore.data;
   });
 
   const [showSidebar, setShowSidebar] = useState(true);
@@ -25,7 +29,14 @@ function SidebarUser({ children }: any) {
   const handleContent = () => {
     // fitur mengganti page/content
     // ganti ke contact
-    navigate('/user/contact');
+    // navigate('/user/contact');
+    dispatch(
+      SET_CHILDPAGE({
+        childPage: 'contact',
+        childPageKey: 'contact',
+        data: {},
+      })
+    );
     // dispatch(SET_PAGE({ currentPage: 'contact', data: {} }));
   };
 
@@ -171,8 +182,9 @@ function SidebarUser({ children }: any) {
               </svg>
             </button>
           </div>
-          {/* avatar */}
+          {/* right icon */}
           <div className=" flex items-center">
+            {/* icon contact user */}
             <div className="relative">
               <button type="button" onClick={handleContent}>
                 <img
@@ -182,6 +194,7 @@ function SidebarUser({ children }: any) {
                 />
               </button>
             </div>
+            {/* dropdown profile */}
             <div className="relative flex items-center ms-3">
               <div>
                 <button

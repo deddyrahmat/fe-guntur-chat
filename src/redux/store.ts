@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
 import userMessageReducer from './userMessageSlice';
+import UserReducer from './userSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     userMessage: userMessageReducer,
+    userStore: UserReducer,
   },
 });
 

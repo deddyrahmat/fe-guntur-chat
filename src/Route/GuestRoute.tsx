@@ -8,7 +8,7 @@ export default function GuestRoute({ children }: any) {
   });
 
   // if (!token && !role) return <Navigate to="/login" replace />;
-  if (token && role === 'user') return <Navigate to="/user/message" replace />;
+  if (token && role === 'user') return <Navigate to="/user" replace />;
   if (token && role === 'admin')
     return <Navigate to="/admin/dashboard" replace />;
 
