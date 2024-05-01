@@ -105,25 +105,32 @@ function Chat({ currentUser, username, receiverUser }: any) {
     setInputValue('');
   };
 
+  const [contentPosition, setContentPosition] = useState('-3.5rem');
+  const [contentHeight, setContentHeight] = useState('auto');
+  const [text, setText] = useState('');
+
   const textRef = useRef<any>(null);
   const contentRef = useRef<any>(null);
-  const [stylePosition, setStylePosition] = useState('14');
+  const [styleContent, setStyleContent] = useState({});
 
-  const [currentValue, setCurrentValue] = useState(''); // you can manage data with it
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { scrollHeight, clientHeight } = textRef.current;
+    const height = Math.max(scrollHeight, clientHeight);
+    console.log('scrollHeight', scrollHeight);
+    setText(event.target.value);
+    if (textRef.current.value === '' || textRef.current.value === null) {
+      console.log('1');
 
-  useEffect(() => {
-    textRef.current.style.height = '0px';
-    const { scrollHeight } = textRef.current;
-    contentRef.current.style.height = `68vh`; // Set tinggi ke nilai default
-    if (textRef.current.scrollHeight > 40) {
-      contentRef.current.style.height = `60vh`;
-      setStylePosition('20');
-    } else {
+      setContentHeight('auto'); // Atur kembali tinggi ke "auto" ketika teks dihapus
+      setContentPosition('-3.5rem');
       contentRef.current.style.height = `68vh`;
-      setStylePosition('14');
+    } else {
+      console.log('2');
+      setContentHeight(`10vh`);
+      setContentPosition('-5.5rem');
+      contentRef.current.style.height = `60vh`;
     }
-    textRef.current.style.height = `${scrollHeight}px`;
-  }, [currentValue]);
+  };
 
   // const handleLogout = () => {
   //   if (socket) {
@@ -164,7 +171,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
       <section
         id="message"
         ref={contentRef}
-        className="max-h-[68vh] p-10 mb-2 overflow-y-auto scroll-smooth custom-scrollbar bg-chat rounded-lg md:rounded-xl relative transition-all duration-300 ease-in-out"
+        className="max-h-[68vh] p-10 mb-2 overflow-y-auto scroll-smooth custom-scrollbar bg-chat rounded-lg md:rounded-xl relative"
       >
         {Datamessages?.length > 0 &&
           Datamessages.map((dataMessage: any, idx: number) => {
@@ -287,18 +294,38 @@ function Chat({ currentUser, username, receiverUser }: any) {
       </section>
       <section
         id="form"
-        className={`w-full flex items-start gap-3 absolute -bottom-${stylePosition} right-0`}
+        // -bottom-14
+        style={{ bottom: contentPosition }}
+        className="w-full flex items-start gap-3 absolute  right-0"
       >
         <div className="relative w-full">
           <textarea
             ref={textRef}
-            value={currentValue}
-            onChange={(e) => {
-              setCurrentValue(e.target.value);
-            }}
+            style={{ height: contentHeight }}
+            value={text}
+            onChange={handleChange}
             rows={1}
-            className="resize-none max-h-20 overflow-hidden overflow-y-auto custom-scrollbar border border-gray-300 py-2 px-4 w-[99%] p-2 rounded-lg md:rounded-xl focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-50 ring-primary ring-1 z-10 transition-colors duration-300 ease-in-out focus:shadow-outline "
+            className="resize-none overflow-hidden overflow-y-auto custom-scrollbar border border-gray-300 py-2 px-4 w-[99%] p-2 rounded-lg md:rounded-xl focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-50 ring-primary ring-1 z-10 transition-colors duration-300 ease-in-out focus:shadow-outline "
           />
+          {/* <input
+            className="w-[99%] p-2 rounded-lg md:rounded-xl focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-50 ring-primary ring-1 z-10 transition-colors duration-300 ease-in-out focus:shadow-outline "
+            placeholder="Type message here"
+            value={inputValue}
+            onChange={(e) => {
+              return setInputValue(e.target.value);
+            }}
+          /> */}
+          {/* <div
+            className="absolute -bottom-2 right-[1%] z-[-1]"
+            style={{
+              width: 0,
+              height: 0,
+              borderTop: '20px solid transparent',
+              borderRight: '20px solid white',
+              borderBottom: '20px solid transparent',
+              transform: 'rotate(90deg)',
+            }}
+          /> */}
         </div>
         <button
           type="button"
