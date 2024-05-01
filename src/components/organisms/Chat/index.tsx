@@ -8,108 +8,25 @@ import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
 
 import capitalizeFirstLetters from '../../../utils/manageString';
+import { useAppSelector } from '../../../redux/hooks';
 
-// const SystemMessage = {
-//   id: 1,
-//   body: 'Online',
-//   sender: currentUser,
-// };
-function Chat({ currentUser, username, receiverUser }: any) {
-  const [inputValue, setInputValue] = useState('');
-  const [Datamessages, setDataMessages] = useState([]);
-  const [socket, setSocket] = useState<any>(null);
-  // const [dataOnlineUsers, setDataOnlineUsers] = useState([]);
-  const [dataOnlineUsers, setDataOnlineUsers] = useState<string[]>([]); // Menentukan tipe string[] untuk dataOnlineUsers
-
-  useEffect(() => {
-    const newSocket: any = io(import.meta.env.VITE_URL_SERVER, {
-      autoConnect: false,
-      auth: {
-        userId: currentUser,
-      },
-    });
-    newSocket.connect();
-
-    setSocket(newSocket);
-
-    // memeriksa chat terakhir dan jika ada tampilkan
-    const storageHistoryChat: any = localStorage.getItem('chat-history');
-    if (storageHistoryChat !== null && storageHistoryChat !== undefined) {
-      const firstDate = JSON.parse(storageHistoryChat);
-      setDataMessages(firstDate);
-      const getAfterSeverDay: any = dayjs(firstDate[0].createdAt).add(7, 'day');
-      // console.log('getAfterSeverDay', getAfterSeverDay);
-
-      // Memeriksa apakah tanggal hari ini sama atau lewat 7 hari dari tanggal pertama di history chat
-      const isAfterOrSame =
-        dayjs().isSame(getAfterSeverDay, 'day') ||
-        dayjs().isAfter(getAfterSeverDay, 'day');
-      if (isAfterOrSame) {
-        // simpan history chat ke database dan hapus localstorage
-        // kirim hanyak sender === currentUser
-      }
-      console.log('isAfterOrSame', isAfterOrSame);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('connect', () => {
-        console.log('Socket connected');
-      });
-
-      socket.on('disconnect', () => {
-        console.log('Socket disconnected');
-      });
-
-      socket.on('message', (newMessage: any) => {
-        if (
-          currentUser === newMessage.receiver ||
-          currentUser === newMessage.sender
-        ) {
-          console.log('New message added', newMessage);
-          // simpan chat terbaru yang dikirim dari server agar ditampilkan ke user
-          setDataMessages((previousDataMessages: any): any => {
-            return [...previousDataMessages, newMessage];
-          });
-        }
-      });
-
-      // Mendapatkan daftar pengguna yang online dari server WebSocket saat komponen dipasang
-      socket.on('onlineUsers', (onlineUsers: any) => {
-        setDataOnlineUsers(onlineUsers);
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    if (Datamessages.length > 0) {
-      localStorage.setItem('chat-history', JSON.stringify(Datamessages));
-    }
-  }, [Datamessages]);
-
-  const handleSendMessage = () => {
-    if (!socket || inputValue.trim().length === 0) return;
-    socket.emit('message', {
-      sender: currentUser,
-      receiver: receiverUser,
-      message: inputValue.trim(),
-      createdAt: dayjs(),
-    });
-    setInputValue('');
-  };
+function Chat({
+  handleSendMessage,
+  statusActive,
+  dataMessages,
+  setInputValue,
+  inputValue,
+}: any) {
+  const { email } = useAppSelector((state: any) => {
+    return state.auth;
+  });
+  const dataUserStore = useAppSelector((state: any) => {
+    return state.userStore.data;
+  });
 
   const textRef = useRef<any>(null);
   const contentRef = useRef<any>(null);
   const [stylePosition, setStylePosition] = useState('14');
-
-  const [currentValue, setCurrentValue] = useState(''); // you can manage data with it
 
   useEffect(() => {
     textRef.current.style.height = '0px';
@@ -123,7 +40,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
       setStylePosition('14');
     }
     textRef.current.style.height = `${scrollHeight}px`;
-  }, [currentValue]);
+  }, [inputValue]);
 
   // const handleLogout = () => {
   //   if (socket) {
@@ -132,11 +49,6 @@ function Chat({ currentUser, username, receiverUser }: any) {
   //   // onLogout =function for remove data user login
   //   onLogout();
   // };
-
-  // cek status user, online or offline
-  const isUserOnline = (sessionId: string): boolean => {
-    return dataOnlineUsers.includes(sessionId);
-  };
 
   let prevDate = ''; // Variable untuk menyimpan tanggal pesan sebelumnya
   return (
@@ -152,12 +64,10 @@ function Chat({ currentUser, username, receiverUser }: any) {
         />
         <div>
           <h5 className="text-md md:text-xl text-black dark:text-black">
-            {capitalizeFirstLetters(username)}
+            {capitalizeFirstLetters(dataUserStore?.message?.username)}
           </h5>
           <p className="text-sm text-black dark:text-black">
-            {capitalizeFirstLetters(
-              isUserOnline(receiverUser) ? 'Online' : 'Offline'
-            )}
+            {capitalizeFirstLetters(statusActive)}
           </p>
         </div>
       </section>
@@ -166,11 +76,11 @@ function Chat({ currentUser, username, receiverUser }: any) {
         ref={contentRef}
         className="max-h-[68vh] p-10 mb-2 overflow-y-auto scroll-smooth custom-scrollbar bg-chat rounded-lg md:rounded-xl relative transition-all duration-300 ease-in-out"
       >
-        {Datamessages?.length > 0 &&
-          Datamessages.map((dataMessage: any, idx: number) => {
+        {dataMessages?.length > 0 &&
+          dataMessages.map((dataMessage: any, idx: number) => {
             if (
-              receiverUser === dataMessage.receiver ||
-              receiverUser === dataMessage.sender
+              dataUserStore?.message?.email === dataMessage.receiver ||
+              dataUserStore?.message?.email === dataMessage.sender
             ) {
               const messageDate = dayjs(dataMessage.createdAt).format(
                 'YYYY-MM-DD'
@@ -201,7 +111,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
                   <div className="flex justify-center">{displayDate}</div>
 
                   {/* pengirim */}
-                  {currentUser === dataMessage.sender && (
+                  {email === dataMessage.sender && (
                     <div dir="rtl">
                       <div id="sender" className="w-full mb-3">
                         <div className="relative  w-6/12 bg-white p-3 rounded-lg md:rounded-xl gap-3 mb-3">
@@ -241,7 +151,7 @@ function Chat({ currentUser, username, receiverUser }: any) {
                   )}
                   {/* penerima */}
 
-                  {currentUser === dataMessage.receiver && (
+                  {email === dataMessage.receiver && (
                     <div dir="ltr">
                       <div id="receiver" className="w-full mb-3">
                         <div className="relative w-6/12 bg-white p-3 rounded-lg md:rounded-xl gap-3 mb-3">
@@ -292,9 +202,9 @@ function Chat({ currentUser, username, receiverUser }: any) {
         <div className="relative w-full">
           <textarea
             ref={textRef}
-            value={currentValue}
+            value={inputValue}
             onChange={(e) => {
-              setCurrentValue(e.target.value);
+              setInputValue(e.target.value);
             }}
             rows={1}
             className="resize-none max-h-20 overflow-hidden overflow-y-auto custom-scrollbar border border-gray-300 py-2 px-4 w-[99%] p-2 rounded-lg md:rounded-xl focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-50 ring-primary ring-1 z-10 transition-colors duration-300 ease-in-out focus:shadow-outline "
