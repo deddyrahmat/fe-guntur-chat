@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
+import ApiMessage from '../../../config/Endpoints/message';
 import Chat from '../../../components/organisms/Chat';
 import { useAppSelector } from '../../../redux/hooks';
+import { toast } from 'react-toastify';
 
 function Message() {
   const dataUserStore = useAppSelector((state: any) => {
@@ -54,14 +56,29 @@ function Message() {
     }
   }, [dataMessages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!dataUserStore?.index?.socket || inputValue.trim().length === 0) return;
-    dataUserStore?.index?.socket.emit('message', {
+    const values = {
       sender: email,
       receiver: dataUserStore?.message?.email,
       message: inputValue.trim(),
       createdAt: dayjs(),
-    });
+    };
+    dataUserStore?.index?.socket.emit('message', values);
+    try {
+      const config = {
+        headers: {
+          'content-type': 'application/json',
+        },
+      };
+      const res = await ApiMessage.createMessage(values, config);
+      console.log('res', res);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
+      );
+    }
     setInputValue('');
   };
 
