@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 import ApiMessage from '../../../config/Endpoints/message';
 import Chat from '../../../components/organisms/Chat';
 import { useAppSelector } from '../../../redux/hooks';
-import { toast } from 'react-toastify';
 
-function Message() {
+function Message({ socket, dataMessages, setDataMessages }: any) {
   const dataUserStore = useAppSelector((state: any) => {
     return state.userStore.data;
   });
@@ -15,7 +15,8 @@ function Message() {
   });
 
   const [inputValue, setInputValue] = useState('');
-  const [dataMessages, setDataMessages] = useState([]);
+
+  // const [getDataMessages, setgetDataMessages] = useState([]);
 
   useEffect(() => {
     // memeriksa chat terakhir dan jika ada tampilkan
@@ -36,35 +37,15 @@ function Message() {
     }
   }, []);
 
-  useEffect(() => {
-    if (dataUserStore?.index && dataUserStore?.index?.socket) {
-      dataUserStore?.index?.socket.on('message', (newMessage: any) => {
-        if (email === newMessage.receiver || email === newMessage.sender) {
-          console.log('New message added', newMessage);
-          // simpan chat terbaru yang dikirim dari server agar ditampilkan ke user
-          setDataMessages((previousDataMessages: any): any => {
-            return [...previousDataMessages, newMessage];
-          });
-        }
-      });
-    }
-  }, [dataUserStore?.index?.socket]);
-
-  useEffect(() => {
-    if (dataMessages.length > 0) {
-      localStorage.setItem('chat-history', JSON.stringify(dataMessages));
-    }
-  }, [dataMessages]);
-
   const handleSendMessage = async () => {
-    if (!dataUserStore?.index?.socket || inputValue.trim().length === 0) return;
+    if (!socket || inputValue.trim().length === 0) return;
     const values = {
       sender: email,
       receiver: dataUserStore?.message?.email,
       message: inputValue.trim(),
       createdAt: dayjs(),
     };
-    dataUserStore?.index?.socket.emit('message', values);
+    socket.emit('message', values);
     try {
       const config = {
         headers: {
@@ -72,7 +53,6 @@ function Message() {
         },
       };
       const res = await ApiMessage.createMessage(values, config);
-      console.log('res', res);
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||

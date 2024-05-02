@@ -8,7 +8,8 @@ import './index.css';
 import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+  <>
+    {/* <React.StrictMode> */}
     <App />
     <ToastContainer
       position="top-right"
@@ -23,5 +24,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       theme="light"
     />
     <ToastContainer />
-  </React.StrictMode>
+    {/* </React.StrictMode> */}
+  </>
 );

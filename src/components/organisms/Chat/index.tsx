@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect, Fragment, useRef } from 'react';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
 
 import capitalizeFirstLetters from '../../../utils/manageString';
