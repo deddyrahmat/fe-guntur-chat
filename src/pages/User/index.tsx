@@ -1,7 +1,11 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable array-callback-return */
 import React, { Suspense, memo, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import { toast } from 'react-toastify';
 
 import SidebarUser from '../../components/organisms/SidebarUser';
+import ApiUser from '../../config/Endpoints/users';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { SET_CHILDPAGE, SET_PARENTPAGE } from '../../redux/userSlice';
 import Loading from '../../components/atoms/Loading';
@@ -9,6 +13,13 @@ import Welcome from './UserComponents/Welcome';
 
 const Contact = React.lazy(() => import('./UserComponents/Contact'));
 const Message = React.lazy(() => import('./UserComponents/Message'));
+
+type TypeMessage = {
+  sender: string;
+  receiver: string;
+  message: string;
+  createdAt: string;
+};
 
 function User() {
   const dispatch = useAppDispatch();
@@ -19,8 +30,13 @@ function User() {
     return state.auth;
   });
 
+  const dataUserStore = useAppSelector((state: any) => {
+    return state.userStore.data;
+  });
+
   const [socket, setSocket] = useState<any>(null);
   const [dataOnlineUsers, setDataOnlineUsers] = useState<string[]>([]); // Menentukan tipe string[] untuk dataOnlineUsers
+  const [dataSidebarChat, setDataSidebarChat] = useState<any>([]);
 
   // hooks lifecycle
   // connection websocket
@@ -80,7 +96,35 @@ function User() {
       localStorage.setItem('chat-history', JSON.stringify(dataMessages));
     }
 
-    //
+    // filter data yang ada di localstorage untuk ditampilkan di sidebar
+    // buat array baru agar setiap data unik menampilkan pesan terakhir
+    const dataLocalStorage = localStorage.getItem('chat-history');
+    // Memecah pesan-pesan menjadi grup berdasarkan pasangan pengirim-penerima
+    const messageGroups: { [key: string]: TypeMessage[] } = {};
+    if (dataLocalStorage) {
+      const chatLocalStorage = JSON.parse(dataLocalStorage);
+      console.log('chatLocalStorage', chatLocalStorage);
+      if (Array.isArray(chatLocalStorage) && chatLocalStorage.length > 0) {
+        chatLocalStorage.forEach((message) => {
+          if (message.receiver === email) {
+            const key = `${message.sender}-${message.receiver}`;
+            if (
+              !messageGroups[key] ||
+              new Date(message.createdAt) >
+                new Date(messageGroups[key][0].createdAt)
+            ) {
+              messageGroups[key] = [message];
+            }
+          }
+        });
+
+        // Menggabungkan pesan terbaru dari setiap grup menjadi satu array
+        const uniqueMessages: TypeMessage[] = Object.values(
+          messageGroups
+        ).flatMap((group) => group);
+        setDataSidebarChat(uniqueMessages);
+      }
+    }
   }, [dataMessages]);
 
   useEffect(() => {
@@ -100,8 +144,49 @@ function User() {
     );
   }, [dispatch, dataOnlineUsers]);
 
+  const [listContact, setListContact] = useState<any>([]);
+  useEffect(() => {
+    console.log('listContact', listContact);
+    dispatch(
+      SET_CHILDPAGE({
+        childPage: 'contact',
+        childPageKey: 'contact',
+        data: [listContact],
+      })
+    );
+  }, [listContact]);
+
+  const fetchContact = async () => {
+    try {
+      const config = {
+        headers: {
+          'content-type': 'application/json',
+        },
+      };
+      const res = await ApiUser.findUserRoleByEmail(config, email);
+      if (res?.data) {
+        console.log('res.data', res.data);
+        setListContact(res.data);
+      }
+      console.log('res', res);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (dataUserStore?.contact && dataUserStore?.contact.length > 0) {
+      setListContact(dataUserStore?.contact);
+    } else {
+      fetchContact();
+    }
+  }, []);
+
   return (
-    <SidebarUser>
+    <SidebarUser dataSidebarChat={dataSidebarChat}>
       <main>
         <Suspense fallback={<Loading type="xl" />}>
           {childPage === 'index' && <Welcome />}

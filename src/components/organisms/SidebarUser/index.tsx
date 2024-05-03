@@ -3,11 +3,10 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { SET_PAGE } from '../../../redux/userMessageSlice';
 import capitalizeFirstLetters from '../../../utils/manageString';
 import { SET_CHILDPAGE } from '../../../redux/userSlice';
 
-function SidebarUser({ children }: any) {
+function SidebarUser({ children, dataSidebarChat }: any) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { username, email } = useAppSelector((state: any) => {
@@ -46,6 +45,8 @@ function SidebarUser({ children }: any) {
   const handleChange = (event: any) => {
     setSearchTerm(event.target.value);
   };
+
+  console.log('dataSidebarChat', dataSidebarChat);
 
   return (
     <>
@@ -129,25 +130,52 @@ function SidebarUser({ children }: any) {
           {/* sidebar menu */}
           <div className="overflow-y-auto h-4/5 scroll-smooth custom-scrollbar">
             <ul className="space-y-2 font-medium ">
-              <li>
-                <button
-                  type="button"
-                  className="flex items-center p-2 w-full bg-primary text-white rounded-lg dark:text-white hover:bg-primary-500 hover:text-primary-900 dark:hover:bg-gray-700 group"
-                >
-                  <img
-                    src="/assets/icons/icon-user-1.svg"
-                    alt="icon user"
-                    className="bg-white rounded-full w-8 h-8 md:w-10 md:h-10 "
-                  />
-                  {/* atur lebar list message */}
-                  <div className="ms-3 overflow-hidden w-72 text-left">
-                    <p className="text-sm">message</p>
-                    <p className="text-sm font-normal truncate ">
-                      message Lorem
-                    </p>
-                  </div>
-                </button>
-              </li>
+              {Array.isArray(dataSidebarChat) &&
+                dataSidebarChat.length > 0 &&
+                dataSidebarChat.map((data: any, index: number) => {
+                  const detailUser =
+                    dataUserStore?.contact !== undefined &&
+                    dataUserStore?.contact[0]?.length > 0 &&
+                    dataUserStore?.contact[0]?.find(
+                      (user: any) => data.sender === user.email
+                    );
+                  return (
+                    <li key={`chat-user-${index}`}>
+                      <button
+                        type="button"
+                        className="flex items-center p-2 w-full bg-primary text-white rounded-lg dark:text-white hover:bg-primary-500 hover:text-primary-900 dark:hover:bg-gray-700 group"
+                        onClick={() => {
+                          return dispatch(
+                            SET_CHILDPAGE({
+                              childPage: 'message',
+                              childPageKey: 'message',
+                              data: {
+                                email: detailUser.email,
+                                username: detailUser.name,
+                                status: true,
+                              },
+                            })
+                          );
+                        }}
+                      >
+                        <img
+                          src="/assets/icons/icon-user-1.svg"
+                          alt="icon user"
+                          className="bg-white rounded-full w-8 h-8 md:w-10 md:h-10 "
+                        />
+                        {/* atur lebar list message */}
+                        <div className="ms-3 overflow-hidden w-72 text-left">
+                          <p className="text-sm">
+                            {capitalizeFirstLetters(detailUser.name)}
+                          </p>
+                          <p className="text-sm font-normal truncate ">
+                            {data.message}
+                          </p>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         </div>
