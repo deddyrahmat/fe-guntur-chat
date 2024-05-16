@@ -9,9 +9,9 @@ function ContactUser({ handleMessageUser }: any) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {dataUserStore &&
-        dataUserStore?.contact.length > 0 &&
-        dataUserStore?.contact.map((contact: any) => (
-          <Fragment key={`user-${contact.id}`}>
+        dataUserStore?.contact.list.length > 0 &&
+        dataUserStore?.contact.list.map((contact: any, index: number) => (
+          <Fragment key={`user-${index}-${contact.id}`}>
             <UserContactCard
               data={contact}
               handleMessageUser={handleMessageUser}

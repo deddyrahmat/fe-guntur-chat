@@ -1,3 +1,4 @@
+import { setAuthToken } from '../config/Axios';
 import storeRedux from './store';
 
 let currentAuth: any;

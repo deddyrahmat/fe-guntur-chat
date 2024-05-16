@@ -146,44 +146,43 @@ function User() {
 
   const [listContact, setListContact] = useState<any>([]);
   useEffect(() => {
-    console.log('listContact', listContact);
     dispatch(
       SET_CHILDPAGE({
         childPage: 'contact',
         childPageKey: 'contact',
-        data: [listContact],
+        data: { list: listContact },
       })
     );
   }, [listContact]);
 
-  const fetchContact = async () => {
-    try {
-      const config = {
-        headers: {
-          'content-type': 'application/json',
-        },
-      };
-      const res = await ApiUser.findUserRoleByEmail(config, email);
-      if (res?.data) {
-        console.log('res.data', res.data);
-        setListContact(res.data);
-      }
-      console.log('res', res);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
-      );
-    }
-  };
+  // const getContact = async () => {
+  //   try {
+  //     const config = {
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     };
+  //     const res = await ApiUser.findUserRoleByEmail(config, email);
+  //     if (res?.data) {
+  //       console.log('res.data', res.data);
+  //       setListContact(res.data);
+  //     }
+  //     console.log('res', res);
+  //   } catch (error: any) {
+  //     toast.error(
+  //       error?.response?.data?.message ||
+  //         'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
+  //     );
+  //   }
+  // };
 
-  useEffect(() => {
-    if (dataUserStore?.contact && dataUserStore?.contact.length > 0) {
-      setListContact(dataUserStore?.contact);
-    } else {
-      fetchContact();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (dataUserStore?.contact && dataUserStore?.contact.length > 0) {
+  //     setListContact(dataUserStore?.contact);
+  //   } else {
+  //     getContact();
+  //   }
+  // }, []);
 
   return (
     <SidebarUser dataSidebarChat={dataSidebarChat}>

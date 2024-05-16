@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
@@ -39,15 +39,51 @@ function SidebarUser({ children, dataSidebarChat }: any) {
     // dispatch(SET_PAGE({ currentPage: 'contact', data: {} }));
   };
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [resultChat, setResultChat] = useState([]);
+  const [resultSearch, setResultSearch] = useState<any>([]);
+  const [keyword, setKeyword] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (event: any) => {
-    setSearchTerm(event.target.value);
+    setKeyword(event.target.value);
+    const dataLocalStorage = localStorage.getItem('chat-history');
+    let dataFromLocal: any = [];
+    if (dataLocalStorage) {
+      const chatLocalStorage = JSON.parse(dataLocalStorage);
+      dataFromLocal = chatLocalStorage.filter((item: any) =>
+        item.message.toLowerCase().includes(event.target.value.toLowerCase())
+      );
+    }
+    // const contactUser =
+    //   dataUserStore &&
+    //   dataUserStore?.contact &&
+    //   dataUserStore?.contact[0].length > 0 &&
+    //   dataUserStore.contact[0].filter((item: any) => {
+    //     return item.name
+    //       .toLowerCase()
+    //       .includes(event.target.value.toLowerCase());
+    //   });
+
+    console.log('search dataFromLocal', dataFromLocal);
+    // console.log('search contactUser', contactUser);
+    // setResultSearch([...dataFromLocal, ...contactUser]);
+    setResultSearch([...dataFromLocal]);
   };
 
-  console.log('dataSidebarChat', dataSidebarChat);
+  useEffect(() => {
+    if (keyword !== '' && resultSearch && resultSearch.length > 0) {
+      setResultChat(resultSearch);
+    } else if (keyword !== '' && resultSearch && resultSearch.length === 0) {
+      setResultChat([]);
+    } else {
+      setResultChat(dataSidebarChat);
+    }
+  }, [resultSearch, dataSidebarChat]);
 
+  const handleSignOut = () => {
+    localStorage.removeItem('auth');
+    navigate('/login');
+  };
   return (
     <>
       <aside
@@ -111,7 +147,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                 type="text"
                 name="search"
                 id="search"
-                placeholder="Search"
+                placeholder="Search message..."
                 className="w-11/12 focus:outline-none"
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
@@ -130,9 +166,8 @@ function SidebarUser({ children, dataSidebarChat }: any) {
           {/* sidebar menu */}
           <div className="overflow-y-auto h-4/5 scroll-smooth custom-scrollbar">
             <ul className="space-y-2 font-medium ">
-              {Array.isArray(dataSidebarChat) &&
-                dataSidebarChat.length > 0 &&
-                dataSidebarChat.map((data: any, index: number) => {
+              {Array.isArray(resultChat) && resultChat.length > 0 ? (
+                resultChat.map((data: any, index: number) => {
                   const detailUser =
                     dataUserStore?.contact !== undefined &&
                     dataUserStore?.contact[0]?.length > 0 &&
@@ -150,8 +185,8 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                               childPage: 'message',
                               childPageKey: 'message',
                               data: {
-                                email: detailUser.email,
-                                username: detailUser.name,
+                                email: detailUser?.email,
+                                username: detailUser?.name,
                                 status: true,
                               },
                             })
@@ -166,7 +201,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                         {/* atur lebar list message */}
                         <div className="ms-3 overflow-hidden w-72 text-left">
                           <p className="text-sm">
-                            {capitalizeFirstLetters(detailUser.name)}
+                            {capitalizeFirstLetters(detailUser?.name)}
                           </p>
                           <p className="text-sm font-normal truncate ">
                             {data.message}
@@ -175,7 +210,14 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                       </button>
                     </li>
                   );
-                })}
+                })
+              ) : (
+                <li>
+                  <p className="text-sm md:text-xl font-normal truncate text-white text-center">
+                    - Data Not Found -
+                  </p>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -271,13 +313,14 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="http://google.com"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                    <button
+                      type="button"
+                      className="text-red-800 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
+                      onClick={() => handleSignOut()}
                     >
-                      Sign out
-                    </a>
+                      Sign Out
+                    </button>
                   </li>
                 </ul>
               </div>
