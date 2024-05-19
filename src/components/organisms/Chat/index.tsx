@@ -1,8 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-param-reassign */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable react/jsx-key */
 import React, { useState, useEffect, Fragment, useRef } from 'react';
 // import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
@@ -49,6 +44,7 @@ function Chat({
   //   // onLogout =function for remove data user login
   //   onLogout();
   // };
+  // console.log('dataMessages message', dataMessages);
 
   let prevDate = ''; // Variable untuk menyimpan tanggal pesan sebelumnya
   return (
@@ -78,10 +74,16 @@ function Chat({
       >
         {dataMessages?.length > 0 &&
           dataMessages.map((dataMessage: any, idx: number) => {
+            // kondisi untuk cek target user, target sebagai penerima atau pengirim
             if (
               dataUserStore?.message?.email === dataMessage.receiver ||
               dataUserStore?.message?.email === dataMessage.sender
             ) {
+              console.log(
+                'dataUserStore?.message?.email',
+                dataUserStore?.message?.email
+              );
+              console.log('dataMessage.receiver', dataMessage.receiver);
               const messageDate = dayjs(dataMessage.createdAt).format(
                 'YYYY-MM-DD'
               );

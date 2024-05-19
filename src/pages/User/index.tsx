@@ -2,19 +2,20 @@
 /* eslint-disable array-callback-return */
 import React, { Suspense, memo, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { toast } from 'react-toastify';
 
 import SidebarUser from '../../components/organisms/SidebarUser';
-import ApiUser from '../../config/Endpoints/users';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { SET_CHILDPAGE, SET_PARENTPAGE } from '../../redux/userSlice';
 import Loading from '../../components/atoms/Loading';
 import Welcome from './UserComponents/Welcome';
+import ApiMessage from '../../config/Endpoints/message';
 
 const Contact = React.lazy(() => import('./UserComponents/Contact'));
 const Message = React.lazy(() => import('./UserComponents/Message'));
 
 type TypeMessage = {
+  senderName: string;
+  receiverName: string;
   sender: string;
   receiver: string;
   message: string;
@@ -30,9 +31,9 @@ function User() {
     return state.auth;
   });
 
-  const dataUserStore = useAppSelector((state: any) => {
-    return state.userStore.data;
-  });
+  // const dataUserStore = useAppSelector((state: any) => {
+  //   return state.userStore.data;
+  // });
 
   const [socket, setSocket] = useState<any>(null);
   const [dataOnlineUsers, setDataOnlineUsers] = useState<string[]>([]); // Menentukan tipe string[] untuk dataOnlineUsers
@@ -83,6 +84,7 @@ function User() {
         if (email === newMessage.receiver || email === newMessage.sender) {
           // simpan chat terbaru yang dikirim dari server agar ditampilkan ke user
           setDataMessages((previousDataMessages: any): any => {
+            // bukan di sini
             return [...previousDataMessages, newMessage];
           });
         }
@@ -90,20 +92,28 @@ function User() {
     }
   }, [socket]);
 
-  useEffect(() => {
-    // daftarkan data chat ke localstorage setiap ada data message baru yang dibuat oleh user
-    if (dataMessages.length > 0) {
-      localStorage.setItem('chat-history', JSON.stringify(dataMessages));
+  const handleListMessage = async () => {
+    try {
+      const config = {
+        headers: {
+          'content-type': 'application/json',
+        },
+      };
+      const result = await ApiMessage.listMessage(config);
+      // console.log('result', result.data);
+      localStorage.setItem('chat-history', JSON.stringify(result.data));
+    } catch (error) {
+      console.log('error', error);
     }
+  };
 
-    // filter data yang ada di localstorage untuk ditampilkan di sidebar
-    // buat array baru agar setiap data unik menampilkan pesan terakhir
-    const dataLocalStorage = localStorage.getItem('chat-history');
-    // Memecah pesan-pesan menjadi grup berdasarkan pasangan pengirim-penerima
-    const messageGroups: { [key: string]: TypeMessage[] } = {};
+  const dataLocalStorage = localStorage.getItem('chat-history');
+  const handleStoryChat = () => {
     if (dataLocalStorage) {
       const chatLocalStorage = JSON.parse(dataLocalStorage);
-      console.log('chatLocalStorage', chatLocalStorage);
+      const messageGroups: { [key: string]: TypeMessage[] } = {};
+      // if (dataLocalStorage) {
+      // console.log('chatLocalStorage', chatLocalStorage);
       if (Array.isArray(chatLocalStorage) && chatLocalStorage.length > 0) {
         chatLocalStorage.forEach((message) => {
           if (message.receiver === email) {
@@ -117,15 +127,30 @@ function User() {
             }
           }
         });
-
+        // console.log('messageGroups', messageGroups);
         // Menggabungkan pesan terbaru dari setiap grup menjadi satu array
         const uniqueMessages: TypeMessage[] = Object.values(
           messageGroups
         ).flatMap((group) => group);
+        // console.log('uniqueMessage', uniqueMessages);
         setDataSidebarChat(uniqueMessages);
       }
+    } else {
+      handleListMessage();
     }
-  }, [dataMessages]);
+    // }
+  };
+  // filter data yang ada di localstorage untuk ditampilkan di sidebar
+  // buat array baru agar setiap data unik menampilkan pesan terakhir
+  useEffect(() => {
+    // daftarkan data chat ke localstorage setiap ada data message baru yang dibuat oleh user
+    if (dataMessages.length > 0) {
+      localStorage.setItem('chat-history', JSON.stringify(dataMessages));
+    }
+
+    handleStoryChat();
+    // Memecah pesan-pesan menjadi grup berdasarkan pasangan pengirim-penerima
+  }, [dataMessages, dataLocalStorage]);
 
   useEffect(() => {
     dispatch(
@@ -154,35 +179,6 @@ function User() {
       })
     );
   }, [listContact]);
-
-  // const getContact = async () => {
-  //   try {
-  //     const config = {
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     };
-  //     const res = await ApiUser.findUserRoleByEmail(config, email);
-  //     if (res?.data) {
-  //       console.log('res.data', res.data);
-  //       setListContact(res.data);
-  //     }
-  //     console.log('res', res);
-  //   } catch (error: any) {
-  //     toast.error(
-  //       error?.response?.data?.message ||
-  //         'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
-  //     );
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (dataUserStore?.contact && dataUserStore?.contact.length > 0) {
-  //     setListContact(dataUserStore?.contact);
-  //   } else {
-  //     getContact();
-  //   }
-  // }, []);
 
   return (
     <SidebarUser dataSidebarChat={dataSidebarChat}>

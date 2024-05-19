@@ -10,7 +10,7 @@ function Message({ socket, dataMessages, setDataMessages }: any) {
   const dataUserStore = useAppSelector((state: any) => {
     return state.userStore.data;
   });
-  const { email } = useAppSelector((state: any) => {
+  const { email, username } = useAppSelector((state: any) => {
     return state.auth;
   });
 
@@ -40,6 +40,8 @@ function Message({ socket, dataMessages, setDataMessages }: any) {
   const handleSendMessage = async () => {
     if (!socket || inputValue.trim().length === 0) return;
     const values = {
+      senderName: username,
+      receiverName: username,
       sender: email,
       receiver: dataUserStore?.message?.email,
       message: inputValue.trim(),
@@ -52,7 +54,7 @@ function Message({ socket, dataMessages, setDataMessages }: any) {
           'content-type': 'application/json',
         },
       };
-      const res = await ApiMessage.createMessage(values, config);
+      await ApiMessage.createMessage(values, config);
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||

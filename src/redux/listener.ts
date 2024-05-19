@@ -8,6 +8,7 @@ function listener() {
   currentAuth = storeRedux.getState().auth;
   if (currentAuth !== previousAuth) {
     localStorage.setItem('auth', JSON.stringify(currentAuth));
+    setAuthToken(currentAuth.token);
   }
 }
 

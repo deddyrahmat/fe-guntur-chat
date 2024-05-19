@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import capitalizeFirstLetters from '../../../utils/manageString';
 import { SET_CHILDPAGE } from '../../../redux/userSlice';
+import { USER_LOGOUT } from '../../../redux/authSlice';
 
 function SidebarUser({ children, dataSidebarChat }: any) {
   const navigate = useNavigate();
@@ -12,9 +13,9 @@ function SidebarUser({ children, dataSidebarChat }: any) {
   const { username, email } = useAppSelector((state: any) => {
     return state.auth;
   });
-  const dataUserStore = useAppSelector((state: any) => {
-    return state.userStore.data;
-  });
+  // const dataUserStore = useAppSelector((state: any) => {
+  //   return state.userStore.data;
+  // });
 
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAvatar, setShowAvatar] = useState(false);
@@ -54,16 +55,6 @@ function SidebarUser({ children, dataSidebarChat }: any) {
         item.message.toLowerCase().includes(event.target.value.toLowerCase())
       );
     }
-    // const contactUser =
-    //   dataUserStore &&
-    //   dataUserStore?.contact &&
-    //   dataUserStore?.contact[0].length > 0 &&
-    //   dataUserStore.contact[0].filter((item: any) => {
-    //     return item.name
-    //       .toLowerCase()
-    //       .includes(event.target.value.toLowerCase());
-    //   });
-
     console.log('search dataFromLocal', dataFromLocal);
     // console.log('search contactUser', contactUser);
     // setResultSearch([...dataFromLocal, ...contactUser]);
@@ -81,9 +72,10 @@ function SidebarUser({ children, dataSidebarChat }: any) {
   }, [resultSearch, dataSidebarChat]);
 
   const handleSignOut = () => {
-    localStorage.removeItem('auth');
-    navigate('/login');
+    dispatch(USER_LOGOUT());
+    navigate('/login', { replace: true });
   };
+
   return (
     <>
       <aside
@@ -166,14 +158,9 @@ function SidebarUser({ children, dataSidebarChat }: any) {
           {/* sidebar menu */}
           <div className="overflow-y-auto h-4/5 scroll-smooth custom-scrollbar">
             <ul className="space-y-2 font-medium ">
+              {/* perbaiki contact, masih menampilkan password dan name muncul ketika masuk page contact */}
               {Array.isArray(resultChat) && resultChat.length > 0 ? (
                 resultChat.map((data: any, index: number) => {
-                  const detailUser =
-                    dataUserStore?.contact !== undefined &&
-                    dataUserStore?.contact[0]?.length > 0 &&
-                    dataUserStore?.contact[0]?.find(
-                      (user: any) => data.sender === user.email
-                    );
                   return (
                     <li key={`chat-user-${index}`}>
                       <button
@@ -184,11 +171,21 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                             SET_CHILDPAGE({
                               childPage: 'message',
                               childPageKey: 'message',
-                              data: {
-                                email: detailUser?.email,
-                                username: detailUser?.name,
-                                status: true,
-                              },
+                              data:
+                                data.sender === email
+                                  ? {
+                                      // jika sender adalah user yang login maka ambil receiver dan kirim ke redux
+                                      // agar data yang muncul adalah data user target bukan kita sebagai yang login
+                                      email: data?.receiver,
+                                      username: data?.receiverName,
+                                      status: true,
+                                    }
+                                  : {
+                                      // sender berisi email dari pengirim sebelumnya yang di simpan di sidebar dan digunakan sebagai penerima ketika ingin akses message dari sidebar
+                                      email: data?.sender,
+                                      username: data?.senderName,
+                                      status: true,
+                                    },
                             })
                           );
                         }}
@@ -201,7 +198,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                         {/* atur lebar list message */}
                         <div className="ms-3 overflow-hidden w-72 text-left">
                           <p className="text-sm">
-                            {capitalizeFirstLetters(detailUser?.name)}
+                            {capitalizeFirstLetters(data?.senderName)}
                           </p>
                           <p className="text-sm font-normal truncate ">
                             {data.message}

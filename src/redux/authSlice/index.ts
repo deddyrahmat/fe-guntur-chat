@@ -26,8 +26,11 @@ export const UserSlice = createSlice({
       state.username = action.payload.name;
     },
     USER_LOGOUT: (state) => {
-      state.token = '';
       localStorage.removeItem('auth');
+      state.token = '';
+      state.role = '';
+      state.email = '';
+      state.username = '';
     },
   },
 });

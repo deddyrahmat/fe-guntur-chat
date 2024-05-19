@@ -1,16 +1,27 @@
 import React from 'react';
 
 type TypeLoading = {
-  type: 'sm' | 'lg' | 'xl';
+  type: 'sm' | 'lg' | 'xl' | 'auto';
+  bg?: string;
   withText?: boolean;
 };
 
-function Loading({ type, withText = false }: TypeLoading) {
+function Loading({ type, bg = 'bg-white', withText = false }: TypeLoading) {
+  let background = '';
+  if (bg === 'transparent') {
+    background = 'transparent';
+  } else {
+    background = 'bg-white';
+  }
+
   let size = '';
   let text = '';
-  if (type === 'xl') {
-    size = 'w-screen h-screen';
+  if (type === 'auto') {
+    size = 'w-full h-full';
     text = 'text-xl lg:text-4xl';
+  } else if (type === 'xl') {
+    size = 'w-screen h-screen';
+    text = 'text-lg lg:text-2xl';
   } else if (type === 'lg') {
     size = 'w-60 h-60';
     text = 'text-lg lg:text-2xl';
@@ -20,7 +31,7 @@ function Loading({ type, withText = false }: TypeLoading) {
   }
 
   return (
-    <div className={`${size} flex justify-center items-center bg-white`}>
+    <div className={`${size} flex justify-center items-center ${background}`}>
       <div className="flex gap-4 items-center">
         {withText && <h3 className={text}>Loading</h3>}
         <div role="status">

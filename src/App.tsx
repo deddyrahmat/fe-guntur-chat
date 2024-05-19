@@ -5,13 +5,13 @@ import { Provider } from 'react-redux';
 import listen from './redux/listener';
 import { router } from './route';
 import storeRedux from './redux/store';
-import { setAuthToken } from './config/Axios';
+// import { setAuthToken } from './config/Axios';
 
-const auth = localStorage.getItem('auth');
-if (auth) {
-  const { token } = JSON.parse(auth);
-  setAuthToken(token);
-}
+// const auth = localStorage.getItem('auth');
+// if (auth) {
+//   const { token } = JSON.parse(auth);
+//   setAuthToken(token);
+// }
 function App() {
   useEffect(() => {
     listen();
