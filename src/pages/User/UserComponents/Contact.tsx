@@ -41,15 +41,18 @@ function Contact() {
 
   const [page, setPage] = useState(1);
   // urutan data yang ditampilkan
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(2);
   // total data yang ditampilkan
   const [keyword, setKeyword] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadMore, setLoadMore] = useState(true);
 
   const fetchUsers = async (
     pKeyword: string,
     pPage: number,
     pPageSize: number
   ) => {
+    setIsLoading(true);
     try {
       const config = {
         headers: {
@@ -61,11 +64,17 @@ function Contact() {
         setResultUser(res.data[0]);
         // setResultUser((prev: any) => [...prev, ...res.data[0]]);
         setTotalUser(res.data[1]);
-        if (res.data.length === 0) {
+        console.log('res.data.', res.data);
+        if (res.data[0].length === 0) {
           toast.warning('Data tidak ditemukan');
         }
+        if (res.data[1].length < 5) {
+          setLoadMore(false);
+        }
       }
+      setIsLoading(false);
     } catch (error: any) {
+      setIsLoading(false);
       toast.error(
         error?.response?.data?.message ||
           'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
@@ -75,6 +84,7 @@ function Contact() {
 
   useEffect(() => {
     if (page === 1) {
+      // Jika ini adalah halaman pertama, set langsung dengan resultUser
       setAllUsers(resultUser);
       dispatch(
         SET_CHILDPAGE({
@@ -86,14 +96,20 @@ function Contact() {
           },
         })
       );
-    }
-    if (resultUser?.length > 0 && page > 1) {
+    } else if (resultUser?.length > 0 && page > 1) {
+      // Jika ini adalah halaman berikutnya, gabungkan data lama dengan yang baru tanpa duplikasi
+      const newUsers = resultUser.filter(
+        (newUser: any) =>
+          !allUsers.some((existingUser: any) => existingUser.id === newUser.id)
+      );
+      const updatedUsers = [...allUsers, ...newUsers];
+      setAllUsers(updatedUsers); // Update state allUsers terlebih dahulu
       dispatch(
         SET_CHILDPAGE({
           childPage: 'contact',
           childPageKey: 'contact',
           data: {
-            list: [...allUsers, ...resultUser],
+            list: updatedUsers,
             total: totalUser,
           },
         })
@@ -123,7 +139,7 @@ function Contact() {
 
   const handleLoadMore = () => {
     setPage(page + 1);
-    // setPageSize(pageSize);
+    setPageSize(pageSize);
 
     if (keyword !== '') {
       fetchUsers(keyword, page + 1, pageSize);
@@ -143,6 +159,8 @@ function Contact() {
     );
     fetchUsers(',', 1, pageSize);
   };
+  console.log('loadMore', loadMore);
+  console.log('isLoading', isLoading);
   return (
     <>
       <h2 className="mb-5 text-lg md:text-xl font-bold bg-white p-3 rounded-lg md:rounded-xl">
@@ -174,29 +192,28 @@ function Contact() {
           />
         </button>
       </div>
-      {Array.isArray(resultUser) && resultUser.length > 0 && totalUser > 0 ? (
+      {loadMore && isLoading === false ? (
         <>
           <ContactUser handleMessageUser={handleMessageUser} />
-          {resultUser &&
-            totalUser &&
-            resultUser.length > 0 &&
-            page < totalUser && (
-              <>
-                <p className="italic mt-5">
-                  Untuk menunjukkan hasil yang paling relevan untuk Anda,
-                  silahkan gunakan fitur pencarian
-                </p>
-                <section className="flex justify-center items-center mt-3">
-                  <button
-                    type="button"
-                    className="bg-primary py-2 px-4 text-white dark:text-black rounded-lg md:rounded-xl hover:bg-primary-500 hover:text-primary-900 "
-                    onClick={handleLoadMore}
-                  >
-                    Load More
-                  </button>
-                </section>
-              </>
-            )}
+          {/* resultUser &&
+            totalUser && */}
+          {resultUser.length > 0 && page < totalUser && (
+            <>
+              <p className="italic mt-5">
+                Untuk menunjukkan hasil yang paling relevan untuk Anda, silahkan
+                gunakan fitur pencarian
+              </p>
+              <section className="flex justify-center items-center mt-3">
+                <button
+                  type="button"
+                  className="bg-primary py-2 px-4 text-white dark:text-black rounded-lg md:rounded-xl hover:bg-primary-500 hover:text-primary-900 "
+                  onClick={handleLoadMore}
+                >
+                  Load More
+                </button>
+              </section>
+            </>
+          )}
         </>
       ) : (
         <Loading type="auto" bg="transparent" />
