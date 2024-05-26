@@ -194,23 +194,24 @@ function Contact() {
           <ContactUser handleMessageUser={handleMessageUser} />
           {/* resultUser &&
             totalUser && */}
-          {resultUser.length > 0 && page < totalUser && (
-            <>
-              <p className="italic mt-5">
-                Untuk menunjukkan hasil yang paling relevan untuk Anda, silahkan
-                gunakan fitur pencarian
-              </p>
-              <section className="flex justify-center items-center mt-3">
-                <button
-                  type="button"
-                  className="bg-primary py-2 px-4 text-white dark:text-black rounded-lg md:rounded-xl hover:bg-primary-500 hover:text-primary-900 "
-                  onClick={handleLoadMore}
-                >
-                  Load More
-                </button>
-              </section>
-            </>
-          )}
+          {dataUserStore?.contact?.list?.length > 0 &&
+            dataUserStore?.contact?.list?.length < totalUser && (
+              <>
+                <p className="italic mt-5">
+                  Untuk menunjukkan hasil yang paling relevan untuk Anda,
+                  silahkan gunakan fitur pencarian
+                </p>
+                <section className="flex justify-center items-center mt-3">
+                  <button
+                    type="button"
+                    className="bg-primary py-2 px-4 text-white dark:text-black rounded-lg md:rounded-xl hover:bg-primary-500 hover:text-primary-900 "
+                    onClick={handleLoadMore}
+                  >
+                    Load More
+                  </button>
+                </section>
+              </>
+            )}
         </>
       ) : (
         <Loading type="auto" bg="transparent" />
