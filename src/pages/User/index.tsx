@@ -156,7 +156,6 @@ function User() {
         },
       };
       const result = await ApiMessage.listMessage(config);
-      console.log('result message', result.data);
       localStorage.setItem('chat-history', JSON.stringify(result.data));
     } catch (error) {
       console.log('error', error);
@@ -172,38 +171,34 @@ function User() {
   const handleStoryChat = () => {
     if (dataLocalStorage) {
       const chatLocalStorage = JSON.parse(dataLocalStorage);
-      const messageGroups: { [key: string]: TypeMessage[] } = {};
-      // console.log('chatLocalStorage', chatLocalStorage);
-      // if (dataLocalStorage) {
-      console.log('chatLocalStorage', chatLocalStorage);
       if (Array.isArray(chatLocalStorage) && chatLocalStorage.length > 0) {
-        const filterUser = chatLocalStorage.filter((filUser: TypeMessage) => {
-          return filUser.receiver === email;
-        });
+        const messageGroups: { [key: string]: TypeMessage } = {};
 
-        if (filterUser?.length === 0) {
-          handleListMessage();
-        }
-        chatLocalStorage.forEach((message) => {
-          if (message.receiver === email) {
-            const key = `${message.sender}-${message.receiver}`;
+        chatLocalStorage.forEach((message: TypeMessage) => {
+          const isSender = message.sender === email;
+          const isReceiver = message.receiver === email;
+
+          if (isSender || isReceiver) {
+            const chatPartner = isSender ? message.receiver : message.sender;
+            const key = chatPartner;
+
             if (
               !messageGroups[key] ||
               new Date(message.createdAt) >
-                new Date(messageGroups[key][0].createdAt)
+                new Date(messageGroups[key].createdAt)
             ) {
-              messageGroups[key] = [message];
+              // membuat object berdasarkan partner
+              messageGroups[key] = message;
             }
           }
         });
-        // console.log('messageGroups', messageGroups);
-        // Menggabungkan pesan terbaru dari setiap grup menjadi satu array
-        // Memecah pesan-pesan menjadi grup berdasarkan pasangan pengirim-penerima
-        const uniqueMessages: TypeMessage[] = Object.values(
-          messageGroups
-        ).flatMap((group) => group);
-        // console.log('uniqueMessage', uniqueMessages);
+
+        // Mengubah messageGroups menjadi array untuk digunakan di sidebar
+        const uniqueMessages: TypeMessage[] = Object.values(messageGroups);
+
         setDataSidebarChat(uniqueMessages);
+      } else {
+        handleListMessage();
       }
     } else {
       handleListMessage();

@@ -54,9 +54,15 @@ function SidebarUser({ children, dataSidebarChat }: any) {
     let dataFromLocal: any = [];
     if (dataLocalStorage) {
       const chatLocalStorage = JSON.parse(dataLocalStorage);
-      dataFromLocal = chatLocalStorage.filter((item: any) =>
-        item.message.toLowerCase().includes(event.target.value.toLowerCase())
-      );
+      // filter pertama untuk mencari data sesuai keyword search
+      // filter kedua untuk mencari data sesuai user login
+      dataFromLocal = chatLocalStorage
+        .filter((item: any) =>
+          item.message.toLowerCase().includes(event.target.value.toLowerCase())
+        )
+        .filter(
+          (data: any) => data.sender === email || data.receiver === email
+        );
     }
     // console.log('search contactUser', contactUser);
     // setResultSearch([...dataFromLocal, ...contactUser]);
@@ -77,6 +83,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
     dispatch(USER_LOGOUT());
     navigate('/login', { replace: true });
   };
+  console.log('resultChat', resultChat);
 
   return (
     <>
@@ -162,58 +169,69 @@ function SidebarUser({ children, dataSidebarChat }: any) {
             <ul className="space-y-2 font-medium ">
               {/* perbaiki contact, masih menampilkan password dan name muncul ketika masuk page contact */}
               {Array.isArray(resultChat) && resultChat.length > 0 ? (
-                resultChat.map((data: any, index: number) => {
-                  return (
-                    <li key={`chat-user-${index}`}>
-                      <button
-                        type="button"
-                        className="flex items-center p-2 w-full bg-primary text-white rounded-lg dark:text-white hover:bg-primary-500 hover:text-primary-900 dark:hover:bg-gray-700 group"
-                        onClick={() => {
-                          return dispatch(
-                            SET_CHILDPAGE({
-                              childPage: 'message',
-                              childPageKey: 'message',
-                              data:
+                resultChat
+                  .sort(
+                    (a: any, b: any) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime()
+                  )
+                  .map((data: any, index: number) => {
+                    console.log('resultChat', resultChat);
+                    return (
+                      <li key={`chat-user-${index}`}>
+                        <button
+                          type="button"
+                          className="flex items-center p-2 w-full bg-primary text-white rounded-lg dark:text-white hover:bg-primary-500 hover:text-primary-900 dark:hover:bg-gray-700 group"
+                          onClick={() => {
+                            return dispatch(
+                              SET_CHILDPAGE({
+                                childPage: 'message',
+                                childPageKey: 'message',
+                                data:
+                                  data.sender === email
+                                    ? {
+                                        // jika sender adalah user yang login maka ambil receiver dan kirim ke redux
+                                        // agar data yang muncul adalah data user target bukan kita sebagai yang login
+                                        email: data?.receiver,
+                                        username: data?.receiverName,
+                                        status: true,
+                                      }
+                                    : {
+                                        // sender berisi email dari pengirim sebelumnya yang di simpan di sidebar dan digunakan sebagai penerima ketika ingin akses message dari sidebar
+                                        email: data?.sender,
+                                        username: data?.senderName,
+                                        status: true,
+                                      },
+                              })
+                            );
+                          }}
+                        >
+                          <img
+                            src="/assets/icons/icon-user-1.svg"
+                            alt="icon user"
+                            className="bg-white rounded-full w-8 h-8 md:w-10 md:h-10 "
+                          />
+                          {/* atur lebar list message */}
+                          <div className="ms-3 overflow-hidden w-72 text-left">
+                            <p className="text-sm">
+                              {capitalizeFirstLetters(
                                 data.sender === email
-                                  ? {
-                                      // jika sender adalah user yang login maka ambil receiver dan kirim ke redux
-                                      // agar data yang muncul adalah data user target bukan kita sebagai yang login
-                                      email: data?.receiver,
-                                      username: data?.receiverName,
-                                      status: true,
-                                    }
-                                  : {
-                                      // sender berisi email dari pengirim sebelumnya yang di simpan di sidebar dan digunakan sebagai penerima ketika ingin akses message dari sidebar
-                                      email: data?.sender,
-                                      username: data?.senderName,
-                                      status: true,
-                                    },
-                            })
-                          );
-                        }}
-                      >
-                        <img
-                          src="/assets/icons/icon-user-1.svg"
-                          alt="icon user"
-                          className="bg-white rounded-full w-8 h-8 md:w-10 md:h-10 "
-                        />
-                        {/* atur lebar list message */}
-                        <div className="ms-3 overflow-hidden w-72 text-left">
-                          <p className="text-sm">
-                            {capitalizeFirstLetters(data?.senderName)}
-                          </p>
-                          <p className="text-sm font-normal truncate ">
-                            {data.message}
-                          </p>
-                        </div>
-                      </button>
-                    </li>
-                  );
-                })
+                                  ? data?.receiverName
+                                  : data?.senderName
+                              )}
+                            </p>
+                            <p className="text-sm font-normal truncate ">
+                              {data.message}
+                            </p>
+                          </div>
+                        </button>
+                      </li>
+                    );
+                  })
               ) : (
                 <li>
                   <p className="text-sm md:text-xl font-normal truncate text-white text-center">
-                    - Data Not Found -
+                    - Chat Not Found -
                   </p>
                 </li>
               )}
