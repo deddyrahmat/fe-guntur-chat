@@ -96,7 +96,10 @@ function Chat({
               return (
                 <Fragment key={idx}>
                   {/* info tanggal */}
-                  <div className="flex justify-center">{displayDate}</div>
+                  {email === dataMessage.sender ||
+                  email === dataMessage.receiver ? (
+                    <div className="flex justify-center">{displayDate}</div>
+                  ) : null}
 
                   {/* pengirim */}
                   {email === dataMessage.sender && (

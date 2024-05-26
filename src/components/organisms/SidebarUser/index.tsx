@@ -83,7 +83,6 @@ function SidebarUser({ children, dataSidebarChat }: any) {
     dispatch(USER_LOGOUT());
     navigate('/login', { replace: true });
   };
-  console.log('resultChat', resultChat);
 
   return (
     <>
@@ -176,7 +175,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                       new Date(a.createdAt).getTime()
                   )
                   .map((data: any, index: number) => {
-                    console.log('resultChat', resultChat);
+                    // console.log('resultChat', resultChat);
                     return (
                       <li key={`chat-user-${index}`}>
                         <button

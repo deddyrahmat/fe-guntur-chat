@@ -63,7 +63,6 @@ function User() {
 
     // Mendapatkan daftar pengguna yang online dari server WebSocket saat komponen dipasang
     newSocket.on('onlineUsers', (onlineUsers: any) => {
-      console.log('onlineUsers', onlineUsers);
       setDataOnlineUsers(onlineUsers);
     });
 
@@ -117,10 +116,10 @@ function User() {
           // periksa story chat
           // jika chat dengan user baru, maka ambil story dan gabung data
           // jika tidak maka langsung gabung data
-          console.log('dataLocalStorage', dataLocalStorage);
+          // console.log('dataLocalStorage', dataLocalStorage);
           if (dataLocalStorage) {
             const chatLocalStorage: any = JSON.parse(dataLocalStorage);
-            console.log('chatLocalStorage', chatLocalStorage);
+            // console.log('chatLocalStorage', chatLocalStorage);
             if (
               Array.isArray(chatLocalStorage) &&
               chatLocalStorage.length > 0
@@ -135,7 +134,6 @@ function User() {
               return [...previousDataMessages, newMessage];
             });
           }
-          console.log('dataMessages', dataMessages);
         }
       });
     }
@@ -210,7 +208,7 @@ function User() {
   useEffect(() => {
     // daftarkan data chat ke localstorage setiap ada data message baru yang dibuat oleh user
     if (dataMessages.length > 0) {
-      console.log('dataMessages setLocal', dataMessages);
+      // console.log('dataMessages setLocal', dataMessages);
       localStorage.setItem('chat-history', JSON.stringify(dataMessages));
     }
 
