@@ -14,6 +14,8 @@ export default function errorHandler(error: any) {
       if (error.response.data.statusCode === 401) {
         // toast.error(error.response.data.message);
         toast.error('Waktu anda habis. Silahkan login ulang');
+        localStorage.removeItem('auth');
+        window.location.replace('/login');
       }
 
       if (error.response.data.statusCode === 403) {

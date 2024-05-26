@@ -41,7 +41,7 @@ function Contact() {
 
   const [page, setPage] = useState(1);
   // urutan data yang ditampilkan
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(4);
   // total data yang ditampilkan
   const [keyword, setKeyword] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +64,6 @@ function Contact() {
         setResultUser(res.data[0]);
         // setResultUser((prev: any) => [...prev, ...res.data[0]]);
         setTotalUser(res.data[1]);
-        console.log('res.data.', res.data);
         if (res.data[0].length === 0) {
           toast.warning('Data tidak ditemukan');
         }
@@ -159,8 +158,6 @@ function Contact() {
     );
     fetchUsers(',', 1, pageSize);
   };
-  console.log('loadMore', loadMore);
-  console.log('isLoading', isLoading);
   return (
     <>
       <h2 className="mb-5 text-lg md:text-xl font-bold bg-white p-3 rounded-lg md:rounded-xl">
@@ -176,7 +173,7 @@ function Contact() {
         <input
           type="text"
           name="search"
-          id="search"
+          value={keyword}
           placeholder="Search User..."
           className="w-11/12 focus:outline-none"
           onFocus={() => setIsFocused(true)}

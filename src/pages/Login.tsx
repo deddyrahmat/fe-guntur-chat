@@ -112,7 +112,7 @@ function Login() {
                   to="/register"
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
-                  Sign UP
+                  Sign Up
                 </Link>
               </p>
             </form>

@@ -37,15 +37,6 @@ function Chat({
     textRef.current.style.height = `${scrollHeight}px`;
   }, [inputValue]);
 
-  // const handleLogout = () => {
-  //   if (socket) {
-  //     socket.disconnect();
-  //   }
-  //   // onLogout =function for remove data user login
-  //   onLogout();
-  // };
-  // console.log('dataMessages message', dataMessages);
-
   let prevDate = ''; // Variable untuk menyimpan tanggal pesan sebelumnya
   return (
     <main className="relative">
@@ -79,11 +70,6 @@ function Chat({
               dataUserStore?.message?.email === dataMessage.receiver ||
               dataUserStore?.message?.email === dataMessage.sender
             ) {
-              console.log(
-                'dataUserStore?.message?.email',
-                dataUserStore?.message?.email
-              );
-              console.log('dataMessage.receiver', dataMessage.receiver);
               const messageDate = dayjs(dataMessage.createdAt).format(
                 'YYYY-MM-DD'
               );

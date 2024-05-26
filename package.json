@@ -20,7 +20,7 @@
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
     "formik": "^2.4.5",
-    "mantine-datatable": "^7.8.1",
+    "mantine-datatable": "^7.9.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.8.2",

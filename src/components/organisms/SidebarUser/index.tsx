@@ -45,6 +45,9 @@ function SidebarUser({ children, dataSidebarChat }: any) {
   const [keyword, setKeyword] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
+  const removeSearch = () => {
+    setKeyword('');
+  };
   const handleChange = (event: any) => {
     setKeyword(event.target.value);
     const dataLocalStorage = localStorage.getItem('chat-history');
@@ -55,7 +58,6 @@ function SidebarUser({ children, dataSidebarChat }: any) {
         item.message.toLowerCase().includes(event.target.value.toLowerCase())
       );
     }
-    console.log('search dataFromLocal', dataFromLocal);
     // console.log('search contactUser', contactUser);
     // setResultSearch([...dataFromLocal, ...contactUser]);
     setResultSearch([...dataFromLocal]);
@@ -69,7 +71,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
     } else {
       setResultChat(dataSidebarChat);
     }
-  }, [resultSearch, dataSidebarChat]);
+  }, [resultSearch, dataSidebarChat, keyword]);
 
   const handleSignOut = () => {
     dispatch(USER_LOGOUT());
@@ -89,7 +91,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
           <div className="  mb-4 border-b border-gray-200 dark:border-gray-700 ">
             <div className="flex items-center justify-between ps-2.5 mb-5 ">
               <div>
-                <Link to="/user/contact" className="flex items-center  ">
+                <Link to="/user" className="flex items-center  ">
                   <img
                     src="/assets/images/logo.svg"
                     className="h-6 me-3 sm:h-7 rounded-full bg-white p-1"
@@ -138,7 +140,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
               <input
                 type="text"
                 name="search"
-                id="search"
+                value={keyword}
                 placeholder="Search message..."
                 className="w-11/12 focus:outline-none"
                 onFocus={() => setIsFocused(true)}
@@ -146,7 +148,7 @@ function SidebarUser({ children, dataSidebarChat }: any) {
                 onChange={handleChange}
               />
 
-              <button type="button">
+              <button type="button" onClick={() => removeSearch()}>
                 <img
                   src="/assets/icons/icon-close.svg"
                   alt="icon-close"
