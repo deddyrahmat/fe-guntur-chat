@@ -19,7 +19,7 @@ function Message({
     return state.auth;
   });
 
-  const [inputValue, setInputValue] = useState('');
+  // const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     // memeriksa chat terakhir dan jika ada tampilkan
@@ -41,14 +41,14 @@ function Message({
     }
   }, []);
 
-  const handleSendMessage = async () => {
-    if (!socket || inputValue.trim().length === 0) return;
+  const handleSendMessage = async (inputValue: string) => {
+    if (!socket || inputValue?.trim().length === 0 || inputValue === '') return;
     const values = {
       senderName: username,
       sender: email,
       receiverName: dataUserStore?.message?.username,
       receiver: dataUserStore?.message?.email,
-      message: inputValue.trim(),
+      message: inputValue,
       createdAt: dayjs(),
     };
     socket.emit('message', values);
@@ -65,7 +65,6 @@ function Message({
           'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
       );
     }
-    setInputValue('');
   };
 
   const [online, setOnline] = useState('');
@@ -83,8 +82,8 @@ function Message({
       handleSendMessage={handleSendMessage}
       statusActive={online}
       dataMessages={dataMessages}
-      setInputValue={setInputValue}
-      inputValue={inputValue}
+      // setInputValue={setInputValue}
+      // inputValue={inputValue}
     />
   );
 }

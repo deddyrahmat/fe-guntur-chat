@@ -7,8 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Buttons from '../components/atoms/Buttons';
 import Inputs from '../components/atoms/Inputs';
 
-import ApiAuth from '../config/Endpoints/auth';
-import { useAppDispatch } from '../redux/hooks';
+import { handleRegister } from '../service/auth';
 
 function Register() {
   const navigate = useNavigate();
@@ -29,22 +28,12 @@ function Register() {
         .required('Please input the field'),
     }),
     onSubmit: async (values: any) => {
-      try {
-        const config = {
-          headers: {
-            'content-type': 'application/json',
-          },
-        };
-        const res = await ApiAuth.Register(values, config);
-        if (res?.data) {
-          navigate('/login', { replace: true });
-        }
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.message ||
-            'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
-        );
+      const process = await handleRegister(values);
+      if (!process.status) {
+        toast.error(process.message);
       }
+      toast.success(process.message);
+      navigate('/login', { replace: true });
     },
   });
   return (

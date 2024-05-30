@@ -7,9 +7,9 @@ import { Link } from 'react-router-dom';
 import Buttons from '../components/atoms/Buttons';
 import Inputs from '../components/atoms/Inputs';
 
-import ApiAuth from '../config/Endpoints/auth';
 import { useAppDispatch } from '../redux/hooks';
 import { USER_LOGIN } from '../redux/authSlice';
+import { handleLogin } from '../service/auth';
 
 function Login() {
   const dispatch = useAppDispatch();
@@ -27,22 +27,12 @@ function Login() {
         .required('Please input the field'),
     }),
     onSubmit: async (values: any) => {
-      try {
-        const config = {
-          headers: {
-            'content-type': 'application/json',
-          },
-        };
-        const res = await ApiAuth.Login(values, config);
-        if (res?.data?.access_token) {
-          dispatch(USER_LOGIN(res.data));
-        }
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.message ||
-            'Terjadi kegagalan server. Silahkan coba kembali beberapa saat lagi'
-        );
+      const process = await handleLogin(values);
+      if (!process.status) {
+        toast.error(process.message);
       }
+      dispatch(USER_LOGIN(process.data));
+      toast.success(process.message);
     },
   });
   return (

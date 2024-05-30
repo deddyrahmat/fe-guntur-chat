@@ -1,47 +1,46 @@
 import React, { memo } from 'react';
 
-type TypeInput = {
-  label: string;
+type TypeTextareas = {
   placeholder?: string;
-  unique: string;
   className: string;
-  type: 'text' | 'email' | 'password';
   isDisabled?: boolean;
   value: any;
   onChange: any;
+  onBlur: any;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   formikTouched: any;
   formikError: any;
+  myRef: any;
+  unique: string;
 };
 
-function Inputs({
+function Textareas({
   className,
-  type = 'text',
   isDisabled = false,
-  label,
-  unique,
   placeholder,
   value,
   onChange,
+  onBlur,
+  onKeyDown,
   formikTouched,
   formikError,
-}: TypeInput) {
+  myRef,
+  unique,
+}: TypeTextareas) {
   return (
-    <div>
-      <label
-        htmlFor={unique}
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        {label}
-      </label>
-      <input
-        type={type}
-        name={unique}
+    <div className="w-full">
+      <textarea
         id={unique}
+        name={unique}
         disabled={isDisabled}
         className={className}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+        ref={myRef}
+        rows={1}
       />
       {formikTouched && formikError ? (
         <div className="text-danger mt-1">{formikError}</div>
@@ -50,4 +49,4 @@ function Inputs({
   );
 }
 
-export default memo(Inputs);
+export default memo(Textareas);

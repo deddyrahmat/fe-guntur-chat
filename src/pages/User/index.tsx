@@ -112,6 +112,7 @@ function User() {
   useEffect(() => {
     if (socket && socket.on) {
       socket.on('message', (newMessage: any) => {
+        // console.log('newMessage', newMessage);
         if (email === newMessage.receiver || email === newMessage.sender) {
           // periksa story chat
           // jika chat dengan user baru, maka ambil story dan gabung data
@@ -130,7 +131,6 @@ function User() {
           } else {
             // simpan chat terbaru yang dikirim dari server agar ditampilkan ke user
             setDataMessages((previousDataMessages: any): any => {
-              // bukan di sini
               return [...previousDataMessages, newMessage];
             });
           }

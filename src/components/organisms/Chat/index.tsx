@@ -1,22 +1,38 @@
 import React, { useState, useEffect, Fragment, useRef } from 'react';
-// import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 
 import capitalizeFirstLetters from '../../../utils/manageString';
 import { useAppSelector } from '../../../redux/hooks';
+import Textareas from '../../atoms/Textareas';
+import Buttons from '../../atoms/Buttons';
 
 function Chat({
   handleSendMessage,
   statusActive,
   dataMessages,
-  setInputValue,
-  inputValue,
-}: any) {
+}: // setInputValue,
+// inputValue,
+any) {
   const { email } = useAppSelector((state: any) => {
     return state.auth;
   });
   const dataUserStore = useAppSelector((state: any) => {
     return state.userStore.data;
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      text: '',
+    },
+    validationSchema: Yup.object({
+      text: Yup.string(),
+    }),
+    onSubmit: async (values: any) => {
+      await handleSendMessage(values.text);
+      formik.resetForm(); // Reset form setelah submit
+    },
   });
 
   const textRef = useRef<any>(null);
@@ -35,9 +51,17 @@ function Chat({
       setStylePosition('14');
     }
     textRef.current.style.height = `${scrollHeight}px`;
-  }, [inputValue]);
+  }, [formik.values.text]);
 
   let prevDate = ''; // Variable untuk menyimpan tanggal pesan sebelumnya
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      formik.handleSubmit();
+    }
+  };
+
   return (
     <main className="relative">
       <section
@@ -190,24 +214,31 @@ function Chat({
         id="form"
         className={`w-full flex items-start gap-3 absolute -bottom-${stylePosition} right-0`}
       >
-        <div className="relative w-full">
-          <textarea
-            ref={textRef}
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
-            rows={1}
-            className="resize-none max-h-20 overflow-hidden overflow-y-auto custom-scrollbar border border-gray-300 py-2 px-4 w-[99%] p-2 rounded-lg md:rounded-xl focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-50 ring-primary ring-1 z-10 transition-colors duration-300 ease-in-out focus:shadow-outline "
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleSendMessage}
-          className="bg-primary py-2 px-4 text-white dark:text-black rounded-lg md:rounded-xl hover:bg-primary-500 hover:text-primary-900 "
+        <form
+          className="space-x-2 flex items-start justify-start w-full"
+          onSubmit={formik.handleSubmit}
         >
-          Send
-        </button>
+          <Textareas
+            className="resize-none max-h-20 overflow-hidden overflow-y-auto custom-scrollbar border border-gray-300 py-2 px-4 w-full p-2 rounded-lg md:rounded-xl focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-50 ring-primary ring-1 z-10 transition-colors duration-300 ease-in-out focus:shadow-outline "
+            placeholder="Type Here..."
+            myRef={textRef}
+            unique="text"
+            value={formik.values.text}
+            onChange={formik.handleChange}
+            onKeyDown={handleKeyDown}
+            onBlur={formik.handleBlur}
+            formikTouched={formik.touched.text}
+            formikError={formik.errors.text}
+          />
+          {/* </div> */}
+          <Buttons
+            className=" bg-primary py-2 px-4 text-white dark:text-black rounded-lg md:rounded-xl  hover:text-primary-900 "
+            type="submit"
+            statusButton="primary"
+          >
+            Send
+          </Buttons>
+        </form>
       </section>
     </main>
   );

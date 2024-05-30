@@ -65,7 +65,7 @@ function Contact() {
         // setResultUser((prev: any) => [...prev, ...res.data[0]]);
         setTotalUser(res.data[1]);
         if (res.data[0].length === 0) {
-          toast.warning('Data tidak ditemukan');
+          toast.warning('Contact tidak tersedia');
         }
         if (res.data[1].length < 5) {
           setLoadMore(false);
